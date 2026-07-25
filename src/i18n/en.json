@@ -1,0 +1,22 @@
+{
+	"app": {
+		"title": "HowiBuy"
+	},
+	"nav": {
+		"home": "Home"
+	},
+	"auth": {
+		"signingIn": "Signing in…",
+		"signInError": "Sign-in failed",
+		"logout": "Log out"
+	},
+	"home": {
+		"welcome": "Welcome, {{name}}",
+		"signedInAs": "Signed in as",
+		"apiServer": "API server"
+	},
+	"notFound": {
+		"title": "Page not found",
+		"backHome": "Back to home"
+	}
+}

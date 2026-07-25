@@ -1,0 +1,28 @@
+@import 'tailwindcss';
+@plugin 'daisyui';
+
+@layer base {
+	html {
+		@apply h-full;
+	}
+
+	body {
+		@apply h-full;
+	}
+
+	h1 {
+		@apply mb-[10px] mt-[20px] text-xl font-bold first:mt-0 last:mb-0;
+	}
+
+	h2 {
+		@apply mb-[10px] mt-[15px] text-lg font-bold first:mt-0 last:mb-0;
+	}
+
+	h3 {
+		@apply mb-[10px] mt-[15px] text-base font-bold first:mt-0 last:mb-0;
+	}
+}
+
+body {
+	font-size: 16px;
+}
