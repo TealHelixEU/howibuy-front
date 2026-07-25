@@ -9,9 +9,11 @@ See that repo's `CLAUDE.md` for its layering rules. This file covers the SPA onl
 - Dev server: `npm run dev` (Vite, port 5175, strict)
 - One-shot tests: `npx vitest run` (`npm test` starts watch mode)
 - Single test file: `npx vitest run src/pages/HomePage.test.tsx`
-- Typecheck: `npx tsc --noEmit`
+- Typecheck: `npx tsc --noEmit` — TypeScript is deliberately held at 6.x; see
+  [package.json-comments.md](package.json-comments.md) before upgrading to 7
 - Lint: `npx eslint src/` — formatting is Prettier-via-ESLint, so `npx eslint --fix` is how you format
 - Production build: `npm run build` (runs `tsc` then `vite build`)
+- Dependency check: `npm outdated` — versions are pinned exactly on purpose, so nothing refreshes on its own
 
 A change is not done until `npx vitest run`, `npx tsc --noEmit`, and `npx eslint src/` are all clean.
 
@@ -22,6 +24,15 @@ react-i18next · jotai · react-router · OIDC via `oidc-client-ts` + `react-oid
 Tests: Vitest + `@testing-library/react` on jsdom.
 
 `@/` is the alias for `src/` (tsconfig + Vite). Source is indented with **tabs**.
+
+ESLint 10 runs a **plain flat config** (`eslint.config.js`, ESM) — no `FlatCompat`, no `@eslint/compat`, no
+`@eslint/eslintrc`. React lint rules come from `@eslint-react/eslint-plugin` and `@stylistic/eslint-plugin`;
+`eslint-plugin-react` is deliberately absent (it has not supported ESLint 10 since v7.37.5, April 2025 — don't
+reintroduce it). `no-leaked-conditional-rendering` is type-aware, hence `projectService: true` in the config.
+
+Version pins and `overrides` entries in `package.json` are not self-explanatory and JSON takes no comments, so
+every deliberate pin or hold-back is justified in **[package.json-comments.md](package.json-comments.md)** —
+read it before changing a version or dropping an override, and record the reasoning (with a date) when you add one.
 
 Tailwind 4 is configured **CSS-first**: `src/index.css` holds `@import 'tailwindcss'`, `@plugin 'daisyui'`
 and any `@theme` customisation. There is no `tailwind.config.js` and no PostCSS pipeline — the

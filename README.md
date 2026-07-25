@@ -14,7 +14,7 @@ Matches the other front-ends in these projects:
 - **Tailwind CSS v4** (`@tailwindcss/vite`, CSS-first config) + **daisyUI v5**
 - **react-i18next** (English only for now)
 - **OAuth2/OIDC** via `oidc-client-ts` + `react-oidc-context` (Authorization Code + PKCE)
-- ESLint 9 (flat config) + Prettier, Vitest
+- ESLint 10 (flat config, no compat layer) + Prettier, Vitest
 
 ## Getting started
 
