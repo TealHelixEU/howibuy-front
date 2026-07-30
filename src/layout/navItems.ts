@@ -1,5 +1,5 @@
 import type { ComponentType } from 'react';
-import { FiHome } from 'react-icons/fi';
+import { FiBox, FiGrid, FiHome } from 'react-icons/fi';
 
 export interface NavItem {
 	to: string;
@@ -10,4 +10,8 @@ export interface NavItem {
 }
 
 // Feature routes get appended here as the app grows.
-export const navItems: NavItem[] = [{ to: '/', labelKey: 'nav.home', icon: FiHome, end: true }];
+export const navItems: NavItem[] = [
+	{ to: '/', labelKey: 'nav.home', icon: FiHome, end: true },
+	{ to: '/sfc', labelKey: 'nav.sfc', icon: FiBox },
+	{ to: '/dashboard', labelKey: 'nav.dashboard', icon: FiGrid },
+];

@@ -3,7 +3,9 @@
 		"title": "HowiBuy"
 	},
 	"nav": {
-		"home": "Home"
+		"home": "Home",
+		"sfc": "SFC",
+		"dashboard": "Dashboard"
 	},
 	"auth": {
 		"signingIn": "Signing in…",
@@ -14,6 +16,12 @@
 		"welcome": "Welcome, {{name}}",
 		"signedInAs": "Signed in as",
 		"apiServer": "API server"
+	},
+	"sfc": {
+		"title": "SFC"
+	},
+	"dashboard": {
+		"title": "Dashboard"
 	},
 	"notFound": {
 		"title": "Page not found",
