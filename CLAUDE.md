@@ -9,13 +9,14 @@ See that repo's `CLAUDE.md` for its layering rules. This file covers the SPA onl
 - Dev server: `npm run dev` (Vite, port 5175, strict)
 - One-shot tests: `npx vitest run` (`npm test` starts watch mode)
 - Single test file: `npx vitest run src/pages/HomePage.test.tsx`
-- Typecheck: `npx tsc --noEmit` — TypeScript is deliberately held at 6.x; see
-  [package.json-comments.md](package.json-comments.md) before upgrading to 7
+- Typecheck: `npm run typecheck` — covers both projects (`src` and `vite.config.ts`); a bare `tsc --noEmit`
+  silently skips the Vite config, see [package.json-comments.md](package.json-comments.md). TypeScript is
+  deliberately held at 6.x; the same file explains why, read it before upgrading to 7
 - Lint: `npx eslint src/` — formatting is Prettier-via-ESLint, so `npx eslint --fix` is how you format
-- Production build: `npm run build` (runs `tsc` then `vite build`)
+- Production build: `npm run build` (typechecks, then `vite build`)
 - Dependency check: `npm outdated` — versions are pinned exactly on purpose, so nothing refreshes on its own
 
-A change is not done until `npx vitest run`, `npx tsc --noEmit`, and `npx eslint src/` are all clean.
+A change is not done until `npx vitest run`, `npm run typecheck`, and `npx eslint src/` are all clean.
 
 ## Stack
 

@@ -23,6 +23,25 @@ npx npm-check-updates -i  # pick and apply, then run the full gate
 ```
 
 
+## The `typecheck` script - 30/07/2026
+
+`typecheck` runs `tsc` twice, once per project, rather than the shorter `tsc -b --noEmit`:
+
+```
+tsc -p tsconfig.json --noEmit && tsc -p tsconfig.node.json --noEmit
+```
+
+The two invocations are needed because the sources are split across two projects: `tsconfig.json` covers
+`src`, and `tsconfig.node.json` covers `vite.config.ts`. A bare `tsc --noEmit` checks only the first one —
+outside build mode `tsc` ignores the `references` entry — so a type error in the Vite config passed silently.
+
+Build mode is the obvious way to check both at once and it does not work here: `--noEmit` applies to every
+project in the graph, and a referenced project may not disable emit (`TS6310`). Dropping `composite` from
+`tsconfig.node.json` to satisfy that only trades the error for `TS6306`, since build mode requires references
+to be composite. Emitting for real instead would mean an `outDir` and generated files for a config file
+nobody imports. Two `-p` runs cost one extra process and check exactly what they should.
+
+
 ## Held back
 
 Document any packages that are deliberately held back.
