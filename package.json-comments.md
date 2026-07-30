@@ -32,14 +32,48 @@ tsc -p tsconfig.json --noEmit && tsc -p tsconfig.node.json --noEmit
 ```
 
 The two invocations are needed because the sources are split across two projects: `tsconfig.json` covers
-`src`, and `tsconfig.node.json` covers `vite.config.ts`. A bare `tsc --noEmit` checks only the first one —
-outside build mode `tsc` ignores the `references` entry — so a type error in the Vite config passed silently.
+`src`, and `tsconfig.node.json` covers `vite.config.ts`. Outside build mode `tsc` does not follow the
+`references` entry, so a bare `tsc --noEmit` checks `src` alone and a type error in the Vite config goes
+unreported — hence naming each project explicitly.
 
-Build mode is the obvious way to check both at once and it does not work here: `--noEmit` applies to every
-project in the graph, and a referenced project may not disable emit (`TS6310`). Dropping `composite` from
-`tsconfig.node.json` to satisfy that only trades the error for `TS6306`, since build mode requires references
-to be composite. Emitting for real instead would mean an `outDir` and generated files for a config file
-nobody imports. Two `-p` runs cost one extra process and check exactly what they should.
+Build mode (`tsc -b --noEmit`) looks like the shorter way to check both and cannot work here: it requires
+every project it builds to set `composite: true`, and then refuses `--noEmit` for those projects (`TS6310`)
+because it needs their declaration output. Removing `composite` to satisfy the second demand only violates
+the first (`TS6306`). Emitting for real would mean an `outDir` full of generated files for a config that
+nothing imports. Two `-p` runs cost one extra process and check exactly the right files.
+
+### `composite` and `references` are load-bearing
+
+The `references` entry in `tsconfig.json` and the matching `composite: true` in `tsconfig.node.json` look
+redundant, since nothing under `src` imports `vite.config.ts` and `typecheck` names both projects anyway.
+They are there for **typescript-eslint**: its project service only auto-discovers files named `tsconfig.json`,
+and reaches `tsconfig.node.json` by following the reference. Without it every type-aware rule fails on the
+config file with
+
+```
+0:0  error  Parsing error: vite.config.ts was not found by the project service
+```
+
+TypeScript in turn requires a referenced project to be `composite` (`TS6306`), so the two settings stand or
+fall together. Removing them means telling ESLint about the file some other way — `allowDefaultProject`, or
+folding `vite.config.ts` into `tsconfig.json` — which works but buys nothing.
+
+
+## `--configLoader native` on every Vite script - 30/07/2026
+
+`native` makes Node load `vite.config.ts` directly as an ES module. The default (`bundle`) first bundles the
+config with Rolldown, which quietly permits things ESM does not have — `__dirname` being the one that bit us.
+Vite plans to make `native` the default in a future major, so opting in now turns those incompatibilities
+into failures we see today rather than during an upgrade.
+
+The flag is repeated on `dev`, `build`, `preview`, `test`, `test:run` and `coverage` because it cannot be set
+anywhere central: it decides *how the config file is loaded*, so it lives on `InlineConfig` and not in
+`vite.config.ts` itself, and there is no env-var equivalent (`VITE_CONFIG_NATIVE_IGNORE_WARNING` only
+silences the compatibility warning). Bare `npx vite` or `npx vitest run` therefore still use the default
+loader — prefer the npm scripts.
+
+It is marked experimental in Vite 8.2.0. Verified there: production build (byte-identical output to the
+default loader), the Vitest suite, and dev-server linting through `@nabla/vite-plugin-eslint`.
 
 
 ## Held back

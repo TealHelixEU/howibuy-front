@@ -7,16 +7,20 @@ See that repo's `CLAUDE.md` for its layering rules. This file covers the SPA onl
 ## Commands
 
 - Dev server: `npm run dev` (Vite, port 5175, strict)
-- One-shot tests: `npx vitest run` (`npm test` starts watch mode)
-- Single test file: `npx vitest run src/pages/HomePage.test.tsx`
+- One-shot tests: `npm run test:run` (`npm test` starts watch mode)
+- Single test file: `npm run test:run -- src/pages/HomePage.test.tsx`
 - Typecheck: `npm run typecheck` — covers both projects (`src` and `vite.config.ts`); a bare `tsc --noEmit`
   silently skips the Vite config, see [package.json-comments.md](package.json-comments.md). TypeScript is
   deliberately held at 6.x; the same file explains why, read it before upgrading to 7
-- Lint: `npx eslint src/` — formatting is Prettier-via-ESLint, so `npx eslint --fix` is how you format
+- Lint: `npm run lint` — covers `src/` and `vite.config.ts`; formatting is Prettier-via-ESLint, so
+  `npm run lint -- --fix` is how you format
 - Production build: `npm run build` (typechecks, then `vite build`)
 - Dependency check: `npm outdated` — versions are pinned exactly on purpose, so nothing refreshes on its own
 
-A change is not done until `npx vitest run`, `npm run typecheck`, and `npx eslint src/` are all clean.
+Every Vite-invoking script passes `--configLoader native`, so use the npm scripts rather than bare `npx vite`
+or `npx vitest` — see [package.json-comments.md](package.json-comments.md).
+
+A change is not done until `npm run test:run`, `npm run typecheck`, and `npm run lint` are all clean.
 
 ## Stack
 

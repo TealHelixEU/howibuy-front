@@ -23,7 +23,8 @@ npm install
 npm run dev      # http://localhost:5175
 ```
 
-Other scripts: `npm run build`, `npm run preview`, `npm run typecheck`, `npm run lint`, `npm test`.
+Other scripts: `npm run build`, `npm run preview`, `npm run typecheck`, `npm run lint`, `npm test`,
+`npm run test:run`.
 
 Dev ports in use around here: 5174 is DietWise Backoffice, 8100 is ClaimsBuster, so this app
 takes **5175** (`strictPort`, so a clash fails loudly instead of silently moving).
