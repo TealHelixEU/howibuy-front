@@ -19,6 +19,22 @@ type StoredSession = { accessToken: string; expiresAt: number } | { ended: true 
 
 let renewal: Promise<string | undefined> | null = null;
 
+const watchers = new Set<() => void>();
+
+/**
+ * Watch the session for the moments it changes, which are chiefly the moment it ends. A session ends of its own accord —
+ * on a renewal the API refuses — rather than on anything the user did, so nothing they do would otherwise be the occasion
+ * to look at it again.
+ *
+ * @returns How to stop watching.
+ */
+export function subscribeToHandoffSession(watcher: () => void): () => void {
+	watchers.add(watcher);
+	return () => {
+		watchers.delete(watcher);
+	};
+}
+
 /** Take over the session the redeemed ticket opened, and answer for it from here on. */
 export function beginHandoffSession(token: SessionToken): void {
 	remember(asStored(token));
@@ -39,6 +55,16 @@ export function resumeHandoffSession(): boolean {
 	return true;
 }
 
+/**
+ * Mark the handed-over session this tab is in over: the ticket it arrived with did not work, or the session behind it has
+ * finished. It goes on answering for the session all the same, so that the user of one is never given the token of another
+ * login they have no part in.
+ */
+export function endHandoffSession(): void {
+	remember({ ended: true });
+	configureAccessTokenSource(handoffAccessToken);
+}
+
 export function handoffSessionState(): HandoffSessionState {
 	const session = remembered();
 	if (session === null) {
@@ -52,7 +78,8 @@ export function handoffSessionState(): HandoffSessionState {
 
 /**
  * The token of the session, renewed first when it is close to expiry so that the request it is wanted for still travels on
- * a live one. A token past its expiry is not renewed but answered for: it would be refused, the session being over.
+ * a live one. A token already past its expiry is not renewed but written off: a renewal would be refused, so the session
+ * is over, and is recorded as over so that the application comes to say so.
  */
 async function handoffAccessToken(): Promise<string | undefined> {
 	const session = remembered();
@@ -61,6 +88,7 @@ async function handoffAccessToken(): Promise<string | undefined> {
 	}
 	const msLeft = session.expiresAt - Date.now();
 	if (msLeft <= 0) {
+		remember({ ended: true });
 		return undefined;
 	}
 	return msLeft > RENEW_WITHIN_MS ? session.accessToken : renew(session.accessToken);
@@ -104,6 +132,9 @@ function asStored(token: SessionToken): StoredSession {
 
 function remember(session: StoredSession): void {
 	sessionStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+	watchers.forEach((watcher) => {
+		watcher();
+	});
 }
 
 function remembered(): StoredSession | null {

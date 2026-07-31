@@ -9,6 +9,7 @@ import { appConfigAtom } from '@/config/atoms';
 import { configureI18n } from '@/i18n';
 import { configureUserManager, onSigninCallback } from '@/auth/userManager';
 import { configureApiServerHost } from '@/api/client';
+import { bootstrapHandoffSession } from '@/handoff/handoffBootstrap';
 import { router } from '@/routes/router';
 
 async function bootstrap() {
@@ -16,6 +17,7 @@ async function bootstrap() {
 	configureApiServerHost(config.apiServerHost);
 	const userManager = configureUserManager(config);
 	await configureI18n('en');
+	await bootstrapHandoffSession();
 
 	const jotaiStore = createStore();
 	jotaiStore.set(appConfigAtom, config);

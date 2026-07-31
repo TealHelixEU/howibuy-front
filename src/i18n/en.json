@@ -20,6 +20,9 @@
 		"signInError": "Sign-in failed",
 		"logout": "Log out"
 	},
+	"handoff": {
+		"sessionEnded": "This session has ended. Go back to the shop you came from and open HowiBuy again."
+	},
 	"home": {
 		"title": "Home",
 		"welcome": "Welcome, {{name}}",
