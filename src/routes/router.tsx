@@ -15,9 +15,10 @@ export const routes: RouteObject[] = [
 			</RequireAuth>
 		),
 		children: [
-			{ index: true, element: <HomePage /> },
-			{ path: 'sfc', element: <SfcPage /> },
-			{ path: 'dashboard', element: <DashboardPage /> },
+			// `handle.titleKey` names the i18n key the page-title band renders.
+			{ index: true, element: <HomePage />, handle: { titleKey: 'home.title' } },
+			{ path: 'sfc', element: <SfcPage />, handle: { titleKey: 'sfc.title' } },
+			{ path: 'dashboard', element: <DashboardPage />, handle: { titleKey: 'dashboard.title' } },
 			// Feature routes get added here.
 		],
 	},

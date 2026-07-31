@@ -57,13 +57,54 @@ src/
   auth/              OIDC user manager, RequireAuth guard
   config/            runtime AppConfig (loaded at startup) + fallback
   i18n/              en.json (only locale) + setup
-  layout/ pages/ routes/
+  layout/            AppLayout + routeTitle.ts (page-title lookup)
+    components/      TopBar, BrandLogo, PageTitleBand, FundingStrip, SiteInfoStrip
+  pages/ routes/
 ```
 
 **The `src/components/` rule is objective:** a component belongs there **iff it imports nothing from a
 feature folder**. The moment it imports from a feature, it belongs under that feature's `components/`.
 
 Tests are co-located next to what they test and use relative imports (`./X`) so they move with the file.
+
+## Visual design
+
+The UI follows **<https://tealhelix.eu/about-tealhelix/>** (a Divi site). Every value below was read from
+that site's CSS, so there is no need to re-scrape it. The chrome is: a 66px top bar (logo left, nav right),
+a page-title band, then the page, then two footer strips.
+
+| | |
+|---|---|
+| Deep blue | `#0e4c6d` — headings, nav links, gradient start |
+| Teal | `#0d7b7d` — links, active nav, gradient end |
+| Muted teal | `#54a1a2` — site-info strip |
+| Green / pale green | `#7cbf95` (band eyebrow at 10%) · `#e4ebc1` (funding strip) |
+| Orange · off-white | `#f69560` · `#f4f4f4` (band title) |
+| Body type | 400 / 16px / `lh 1.7` / `font-stretch 100%` |
+| Headings | 500 / `lh 1` / `ls 1px` / `#0e4c6d` / `font-stretch 75%`; h1–h6 = 30·26·22·18·16·14px |
+| Column | 80% wide, capped 1200px (`site-column`; widened to 92% below `md`) |
+| Nav items | 18px / 600, `#0e4c6d`, active `#0d7b7d` |
+| Title band | brand gradient + one oversized arc motif at 5%; eyebrow 900/40px uppercase watermark, title 34px with a `.05em` blue shadow |
+
+Brand colours are `@theme` tokens (`brand-blue`, `brand-teal`, …) **and** feed a custom daisyUI theme named
+`tealhelix`, so `btn`/`card`/`base-*` inherit them. daisyUI's own themes are switched off (`themes: false`),
+and because a custom theme *replaces* rather than extends, that block must list every token it needs —
+including the radius/size/border/depth ones. `site-column`, `title-band` and `title-band-pattern` are
+`@utility` definitions in `src/index.css`.
+
+The logo is three SVGs shown in order — `hib.svg`, `logo.svg`, `th.svg` — revealing progressively: the mark
+alone below `md`, plus the HowiBuy wordmark from `md`, plus the TealHelix wordmark from `xl`. They carry
+their own spacing, so they sit flush.
+
+Each route names its band title via `handle: { titleKey }` in `src/routes/router.tsx`; `useRouteTitleKey()`
+picks the deepest match that declares one, and the band is omitted when none does. Pages therefore do not
+render their own `<h1>`.
+
+**Type deviates from the brand on purpose:** the site uses Barlow, which has no Greek subset, so this app
+uses Roboto's variable width axis for both roles. See
+[package.json-comments.md](package.json-comments.md). Whoever owns the TealHelix brand should be told.
+
+Deliberately *not* copied from the site: social links, the scroll-to-top control, the cookie widget.
 
 ## Data layer
 

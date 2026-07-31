@@ -1,11 +1,4 @@
-import { useTranslation } from 'react-i18next';
-
+/** Placeholder: the page-title band renders the title, the dashboard UI lands here. */
 export function DashboardPage() {
-	const { t } = useTranslation();
-
-	return (
-		<div>
-			<h1>{t('dashboard.title')}</h1>
-		</div>
-	);
+	return null;
 }

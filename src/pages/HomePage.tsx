@@ -12,7 +12,7 @@ export function HomePage() {
 
 	return (
 		<div>
-			<h1>{t('home.welcome', { name })}</h1>
+			<h2>{t('home.welcome', { name })}</h2>
 
 			<div className="card mt-4 max-w-xl border border-base-300 bg-base-100">
 				<div className="card-body gap-3">

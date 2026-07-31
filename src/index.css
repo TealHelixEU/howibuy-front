@@ -1,5 +1,84 @@
 @import 'tailwindcss';
-@plugin 'daisyui';
+/* All subsets, deliberately — the app is going multilingual. `unicode-range` in the
+   @font-face rules means a locale only downloads the subsets it actually needs. */
+@import '@fontsource-variable/roboto/wdth.css';
+
+@plugin 'daisyui' {
+	themes: false;
+}
+
+/* A custom daisyUI theme replaces rather than extends, so every token it needs is listed. */
+@plugin 'daisyui/theme' {
+	name: 'tealhelix';
+	default: true;
+	color-scheme: light;
+
+	--color-base-100: #ffffff;
+	--color-base-200: #f4f4f4;
+	--color-base-300: #e0e0e0;
+	--color-base-content: #222222;
+	--color-primary: #0d7b7d;
+	--color-primary-content: #ffffff;
+	--color-secondary: #0e4c6d;
+	--color-secondary-content: #ffffff;
+	--color-accent: #f69560;
+	--color-accent-content: #222222;
+	--color-neutral: #0e4c6d;
+	--color-neutral-content: #ffffff;
+	--color-info: #54a1a2;
+	--color-info-content: #ffffff;
+	--color-success: #7cbf95;
+	--color-success-content: #222222;
+	--color-warning: #f69560;
+	--color-warning-content: #222222;
+	--color-error: #b3261e;
+	--color-error-content: #ffffff;
+
+	--radius-selector: 0.5rem;
+	--radius-field: 0.25rem;
+	--radius-box: 0.5rem;
+	--size-selector: 0.25rem;
+	--size-field: 0.25rem;
+	--border: 1px;
+	--depth: 0;
+	--noise: 0;
+}
+
+@theme {
+	/* Roboto stands in for the brand's Barlow, which ships no Greek subset. The variable
+	   width axis covers both roles: 100% for body text, 75% for condensed headings. */
+	--font-sans: 'Roboto Variable', Helvetica, Arial, sans-serif;
+
+	--color-brand-blue: #0e4c6d;
+	--color-brand-teal: #0d7b7d;
+	--color-brand-teal-muted: #54a1a2;
+	--color-brand-green: #7cbf95;
+	--color-brand-green-pale: #e4ebc1;
+	--color-brand-orange: #f69560;
+	--color-brand-off-white: #f4f4f4;
+}
+
+/* Every band on tealhelix.eu sits on one centred column, 80% wide and capped at 1200px.
+   Widened below md, where 80% leaves too little room on a phone. */
+@utility site-column {
+	@apply mx-auto w-[92%] max-w-[1200px] md:w-4/5;
+}
+
+/* The title band's backdrop: an off-axis two-stop gradient under one oversized arc motif. */
+@utility title-band {
+	background-image: repeating-linear-gradient(
+		300deg,
+		var(--color-brand-blue) 10em,
+		var(--color-brand-teal) 100em
+	);
+}
+
+@utility title-band-pattern {
+	background-image: url('./assets/images/arc-pattern.svg');
+	background-position: right top;
+	background-size: cover;
+	transform: scaleX(-1);
+}
 
 @layer base {
 	html {
@@ -8,21 +87,44 @@
 
 	body {
 		@apply h-full;
+		font-size: 16px;
+		font-stretch: 100%;
+		line-height: 1.7;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		@apply font-medium text-brand-blue;
+		font-stretch: 75%;
+		letter-spacing: 1px;
+		line-height: 1;
 	}
 
 	h1 {
-		@apply mb-[10px] mt-[20px] text-xl font-bold first:mt-0 last:mb-0;
+		@apply mb-[10px] mt-[20px] text-[30px] first:mt-0 last:mb-0;
 	}
 
 	h2 {
-		@apply mb-[10px] mt-[15px] text-lg font-bold first:mt-0 last:mb-0;
+		@apply mb-[10px] mt-[15px] text-[26px] first:mt-0 last:mb-0;
 	}
 
 	h3 {
-		@apply mb-[10px] mt-[15px] text-base font-bold first:mt-0 last:mb-0;
+		@apply mb-[10px] mt-[15px] text-[22px] first:mt-0 last:mb-0;
 	}
-}
 
-body {
-	font-size: 16px;
+	h4 {
+		@apply mb-[10px] mt-[15px] text-[18px] first:mt-0 last:mb-0;
+	}
+
+	h5 {
+		@apply mb-[10px] mt-[15px] text-[16px] first:mt-0 last:mb-0;
+	}
+
+	h6 {
+		@apply mb-[10px] mt-[15px] text-[14px] first:mt-0 last:mb-0;
+	}
 }

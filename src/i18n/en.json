@@ -7,12 +7,21 @@
 		"sfc": "SFC",
 		"dashboard": "Dashboard"
 	},
+	"layout": {
+		"logoAlt": "HowiBuy — TealHelix",
+		"funding": {
+			"flagAlt": "Flag of the European Union",
+			"title": "Funded by the European Union",
+			"disclaimer": "This project has received funding from the European Union’s Horizon Europe Research and Innovation programme under Grant Agreement number no. 101136955 and from the Swiss State Secretariat for Education, Research and Innovation (SERI). Views and opinions expressed are, however, those of the author(s) only and do not necessarily reflect those of the European Union or European Research Executive Agency. Neither the European Union nor the granting authority can be held responsible for them."
+		}
+	},
 	"auth": {
 		"signingIn": "Signing in…",
 		"signInError": "Sign-in failed",
 		"logout": "Log out"
 	},
 	"home": {
+		"title": "Home",
 		"welcome": "Welcome, {{name}}",
 		"signedInAs": "Signed in as",
 		"apiServer": "API server"

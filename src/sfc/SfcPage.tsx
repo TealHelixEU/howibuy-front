@@ -1,11 +1,4 @@
-import { useTranslation } from 'react-i18next';
-
+/** Placeholder: the page-title band renders the title, the SFC UI lands here. */
 export function SfcPage() {
-	const { t } = useTranslation();
-
-	return (
-		<div>
-			<h1>{t('sfc.title')}</h1>
-		</div>
-	);
+	return null;
 }

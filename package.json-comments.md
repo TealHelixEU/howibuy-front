@@ -76,6 +76,38 @@ It is marked experimental in Vite 8.2.0. Verified there: production build (byte-
 default loader), the Vitest suite, and dev-server linting through `@nabla/vite-plugin-eslint`.
 
 
+## `@fontsource-variable/roboto` - Roboto, not the brand's Barlow - 31/07/2026
+
+The UI follows tealhelix.eu, which sets body text in **Barlow** and headings in **Barlow Condensed**.
+Neither is used here, and the reason is coverage, not taste: both families ship only
+`latin`, `latin-ext` and `vietnamese`. **There is no Greek subset, and no Cyrillic.** The app is going
+multilingual and the project pilots in Greece, so Greek text would have silently fallen back to
+Helvetica mid-page. Adding a Greek-only `unicode-range` override on top of Barlow was the alternative;
+switching outright was chosen instead. Roboto is the closest match in character among the families that
+cover Greek, and it covers Cyrillic too.
+
+Two consequences worth knowing before anyone "tidies" the import in `src/index.css`:
+
+```css
+@import '@fontsource-variable/roboto/wdth.css';
+```
+
+- **`wdth.css`, not `index.css`.** The `wdth` build carries the width axis (`font-stretch: 75% 100%`)
+  as well as the full weight range (`font-weight: 100 900`). That width axis is what replaces Barlow
+  Condensed: `font-stretch: 100%` for body, `75%` for headings. Import the plain `index.css` and every
+  heading silently renders un-condensed.
+- **All subsets, on purpose.** Fontsource also publishes per-subset files (`latin-400.css` and friends).
+  Do **not** narrow the import to those — that reintroduces exactly the gap we left Barlow over. It costs
+  nothing to keep: the file declares one `@font-face` per subset with its own `unicode-range`, so an
+  English page still downloads only `latin`. All nine subset files are emitted at build time and fetched
+  on demand.
+
+One dependency, one import, every weight and both widths, in every locale.
+
+Note that this makes the app and the website disagree on type. That is a brand decision beyond this
+repo — see the note in `CLAUDE.md`.
+
+
 ## Held back
 
 Document any packages that are deliberately held back.

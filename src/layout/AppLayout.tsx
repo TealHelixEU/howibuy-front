@@ -1,60 +1,29 @@
-import { NavLink, Outlet } from 'react-router';
-import { useAuth } from 'react-oidc-context';
+import { Outlet } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import classNames from 'classnames';
-import { FiMenu } from 'react-icons/fi';
-import { navItems } from './navItems';
+import { FundingStrip } from './components/FundingStrip';
+import { PageTitleBand } from './components/PageTitleBand';
+import { SiteInfoStrip } from './components/SiteInfoStrip';
+import { TopBar } from './components/TopBar';
+import { useRouteTitleKey } from './routeTitle';
 
 export function AppLayout() {
-	const auth = useAuth();
 	const { t } = useTranslation();
-	const email = auth.user?.profile.email ?? auth.user?.profile.name ?? '';
+	const titleKey = useRouteTitleKey();
 
 	return (
-		<div className="drawer h-dvh lg:drawer-open">
-			<input id="app-drawer" type="checkbox" className="drawer-toggle" />
+		<div className="flex min-h-dvh flex-col">
+			<TopBar />
 
-			<div className="drawer-content flex h-dvh flex-col">
-				<header className="navbar border-b border-base-300 bg-base-100">
-					<div className="flex-none lg:hidden">
-						<label htmlFor="app-drawer" className="btn btn-square btn-ghost" aria-label="Open menu">
-							<FiMenu className="h-5 w-5" />
-						</label>
-					</div>
-					<div className="flex-1 px-2 text-lg font-semibold">{t('app.title')}</div>
-					<div className="flex-none items-center gap-2">
-						<span className="hidden text-sm opacity-70 sm:inline">{email}</span>
-						<button className="btn btn-sm" onClick={() => void auth.signoutRedirect()}>
-							{t('auth.logout')}
-						</button>
-					</div>
-				</header>
+			{titleKey !== undefined && <PageTitleBand eyebrow={t('app.title')} title={t(titleKey)} />}
 
-				<main className="min-h-0 flex-1 overflow-y-auto p-6">
-					<Outlet />
-				</main>
-			</div>
+			<main className="site-column flex-1 py-6">
+				<Outlet />
+			</main>
 
-			<div className="drawer-side">
-				<label htmlFor="app-drawer" className="drawer-overlay" aria-label="Close menu" />
-				<nav className="flex min-h-full w-64 flex-col bg-base-200 p-4 text-base-content">
-					<div className="mb-4 px-2 text-xl font-bold">{t('app.title')}</div>
-					<ul className="menu w-full gap-1">
-						{navItems.map((item) => (
-							<li key={item.to}>
-								<NavLink
-									to={item.to}
-									end={item.end}
-									className={({ isActive }) => classNames({ active: isActive })}
-								>
-									<item.icon className="h-4 w-4" />
-									{t(item.labelKey)}
-								</NavLink>
-							</li>
-						))}
-					</ul>
-				</nav>
-			</div>
+			<footer>
+				<FundingStrip />
+				<SiteInfoStrip />
+			</footer>
 		</div>
 	);
 }
