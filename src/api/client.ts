@@ -1,4 +1,4 @@
-import { getAccessToken } from '@/auth/userManager';
+import { getAccessToken } from '@/auth/session';
 
 let apiServerHost = '';
 
@@ -22,7 +22,19 @@ export class ApiError extends Error {
  * Throws {@link ApiError} on non-2xx responses. Returns undefined for 204 responses.
  */
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
-	const accessToken = await getAccessToken();
+	return apiFetchWithToken(path, await getAccessToken(), options);
+}
+
+/**
+ * Fetches JSON from the HowiBuy API carrying the token given, or none when there is none to give — for the requests that
+ * establish a session, which cannot take a token from a session that has not begun yet or is renewing the very token they
+ * carry.
+ */
+export async function apiFetchWithToken<T>(
+	path: string,
+	accessToken: string | undefined,
+	options: RequestInit = {},
+): Promise<T> {
 	const headers = new Headers(options.headers);
 	headers.set('Accept', 'application/json');
 	if (options.body != null && !headers.has('Content-Type')) {

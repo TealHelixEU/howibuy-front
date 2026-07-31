@@ -1,0 +1,112 @@
+import { ApiError } from '@/api/client';
+import { configureAccessTokenSource } from '@/auth/session';
+import { renewSessionToken, type SessionToken } from './handoff';
+
+/** Whether this tab is in a session handed over from a retailer, and if so whether it can still be worked in. */
+export type HandoffSessionState = 'none' | 'live' | 'ended';
+
+/**
+ * How close to expiry a token is renewed. The window has to be wide enough that the renewal is answered before the token
+ * it replaces expires, and is far wider than that, so that a request rarely finds a token with less life left in it than
+ * a renewal takes.
+ */
+const RENEW_WITHIN_MS = 120_000;
+
+/** The tab, not the browser: a handed-over session is the one the retailer opened, and nothing of it outlives that tab. */
+const STORAGE_KEY = 'howibuy.handoffSession';
+
+type StoredSession = { accessToken: string; expiresAt: number } | { ended: true };
+
+let renewal: Promise<string | undefined> | null = null;
+
+/** Take over the session the redeemed ticket opened, and answer for it from here on. */
+export function beginHandoffSession(token: SessionToken): void {
+	remember(asStored(token));
+	configureAccessTokenSource(handoffAccessToken);
+}
+
+/**
+ * Answer again for the session this tab was already in, after a reload.
+ *
+ * @returns Whether the tab was in one — a session that is over included, because the user of one has no other login to be
+ *          sent to.
+ */
+export function resumeHandoffSession(): boolean {
+	if (remembered() === null) {
+		return false;
+	}
+	configureAccessTokenSource(handoffAccessToken);
+	return true;
+}
+
+export function handoffSessionState(): HandoffSessionState {
+	const session = remembered();
+	if (session === null) {
+		return 'none';
+	}
+	if ('ended' in session) {
+		return 'ended';
+	}
+	return session.expiresAt > Date.now() ? 'live' : 'ended';
+}
+
+/**
+ * The token of the session, renewed first when it is close to expiry so that the request it is wanted for still travels on
+ * a live one. A token past its expiry is not renewed but answered for: it would be refused, the session being over.
+ */
+async function handoffAccessToken(): Promise<string | undefined> {
+	const session = remembered();
+	if (session === null || 'ended' in session) {
+		return undefined;
+	}
+	const msLeft = session.expiresAt - Date.now();
+	if (msLeft <= 0) {
+		return undefined;
+	}
+	return msLeft > RENEW_WITHIN_MS ? session.accessToken : renew(session.accessToken);
+}
+
+/**
+ * Whoever wants the token while a renewal is in flight waits for that one rather than starting another: a second renewal
+ * would present the token the first has already replaced.
+ */
+function renew(accessToken: string): Promise<string | undefined> {
+	renewal ??= renewSessionToken(accessToken)
+		.then((token) => {
+			remember(asStored(token));
+			return token.accessToken;
+		})
+		.catch((failure: unknown) => {
+			if (isRefusal(failure)) {
+				remember({ ended: true });
+				return undefined;
+			}
+			return accessToken;
+		})
+		.finally(() => {
+			renewal = null;
+		});
+	return renewal;
+}
+
+/**
+ * Whether the API refused the token, rather than failing to say anything about it. A refusal ends the session, there being
+ * no reason it would renew the same token later; a renewal that never arrived leaves the session as it was, on a token
+ * that has life left in it.
+ */
+function isRefusal(failure: unknown): boolean {
+	return failure instanceof ApiError && failure.status >= 400 && failure.status < 500;
+}
+
+function asStored(token: SessionToken): StoredSession {
+	return { accessToken: token.accessToken, expiresAt: Date.now() + token.expiresInSeconds * 1000 };
+}
+
+function remember(session: StoredSession): void {
+	sessionStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+}
+
+function remembered(): StoredSession | null {
+	const stored = sessionStorage.getItem(STORAGE_KEY);
+	return stored === null ? null : (JSON.parse(stored) as StoredSession);
+}
