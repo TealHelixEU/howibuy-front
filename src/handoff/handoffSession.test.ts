@@ -122,6 +122,21 @@ describe('a handed-over session that is over', () => {
 		expect(renewSessionToken).not.toHaveBeenCalled();
 	});
 
+	/**
+	 * A tab left alone runs its session out with nothing watching: no request is made that would discover it, and no renewal
+	 * falls due. Coming back to such a tab, the application reads the session as over from the expiry of the token itself.
+	 */
+	it('is over to a tab that comes back to it after its token expired', async () => {
+		beginHandoffSession(REDEEMED);
+
+		secondsBeforeExpiry(0);
+		const reloaded = await freshPage();
+
+		expect(reloaded.resumeHandoffSession()).toBe(true);
+		expect(reloaded.handoffSessionState()).toBe('sessionOver');
+		expect(renewSessionToken).not.toHaveBeenCalled();
+	});
+
 	/** How the end of the session — which the application is never told — makes itself known. */
 	it('is over once the API refuses to renew it', async () => {
 		beginHandoffSession(REDEEMED);

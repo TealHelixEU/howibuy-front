@@ -4,7 +4,7 @@ import { getAccessToken } from '@/auth/session';
 import type * as HandoffModule from './handoff';
 import type { SessionToken } from './handoff';
 import { bootstrapHandoffSession } from './handoffBootstrap';
-import { beginHandoffSession, handoffSessionState } from './handoffSession';
+import { beginHandoffSession, endHandoffSession, handoffSessionState } from './handoffSession';
 
 const redeemTicket = vi.fn<(ticket: string) => Promise<SessionToken>>();
 
@@ -102,6 +102,22 @@ describe('a user the retailer sent over with a ticket', () => {
 		await bootstrapHandoffSession();
 
 		expect(handoffSessionState()).toBe('serviceUnreachable');
+	});
+
+	/**
+	 * Reloading is what a user does when told the session is over, the link they still have in the address bar looking like
+	 * it ought to work. They are told the same thing again — and above all are not sent to the OIDC login, which has no
+	 * account of theirs, nor given whatever token an earlier login of this browser left behind.
+	 */
+	it('is told the same again on a reload once the session is over', async () => {
+		endHandoffSession('sessionOver');
+
+		const reloaded = await freshPage();
+		await reloaded.bootstrapHandoffSession();
+
+		expect(reloaded.handoffSessionState()).toBe('sessionOver');
+		expect(await reloaded.getAccessToken()).toBeUndefined();
+		expect(redeemTicket).not.toHaveBeenCalled();
 	});
 
 	it('goes on in the same session after a reload, with no ticket to present', async () => {

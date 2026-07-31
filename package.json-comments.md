@@ -108,6 +108,25 @@ Note that this makes the app and the website disagree on type. That is a brand d
 repo — see the note in `CLAUDE.md`.
 
 
+## `@vitest/coverage-v8` - versioned in lockstep with `vitest` - 01/08/2026
+
+The `coverage` script and the `test.coverage` block in `vite.config.ts` predate the provider package, so
+`npm run coverage` failed out of the box with `MISSING DEPENDENCY Cannot find dependency
+'@vitest/coverage-v8'`. Vitest ships coverage as a separate package on purpose — pick `v8` or `istanbul` —
+and neither is a dependency of `vitest` itself.
+
+**Its version must equal the `vitest` version exactly, and move with it.** The two are one release train
+and say so in their metadata: `vitest@4.1.10` declares `@vitest/coverage-v8: 4.1.10` as an optional peer,
+and the provider declares `vitest: 4.1.10` back. npm enforces peers, so a mismatched pair does not fail
+quietly at run time — it fails the install with `ERESOLVE`. The practical consequence is that bumping
+`vitest` alone breaks `npm install` outright: bump both in the same commit.
+
+`coverage/` is generated output. It is already in `.gitignore`; it is also in the `globalIgnores` list in
+`eslint.config.js`, because ESLint does not read `.gitignore` and the v8 `html` reporter emits scripts
+(`coverage/sorter.js` and friends) that no `tsconfig` covers, so a lint run right after a coverage run
+otherwise fails with `was not found by the project service`.
+
+
 ## Held back
 
 Document any packages that are deliberately held back.

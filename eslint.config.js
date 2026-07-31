@@ -98,6 +98,7 @@ export default defineConfig([
 		'**/*.md',
 		'**/build',
 		'**/dist',
+		'**/coverage',
 		'**/eslint.config.js',
 		'**/.*',
 	]),
