@@ -45,12 +45,23 @@ describe('a user working in a session handed over from a retailer', () => {
 
 	/** The login is no help to them: the user of a handed-over session has no account of their own to log in with. */
 	it('is told the session is over rather than sent to a login', () => {
-		endHandoffSession();
+		endHandoffSession('sessionOver');
 
 		renderGuarded();
 
-		expect(screen.queryByText('handoff.sessionEnded')).not.toBeNull();
+		expect(screen.queryByText('handoff.sessionOver')).not.toBeNull();
+		expect(screen.queryByText('handoff.returnToShop')).not.toBeNull();
 		expect(screen.queryByText('the application')).toBeNull();
+		expect(auth.signinRedirect).not.toHaveBeenCalled();
+	});
+
+	/** Which of the ways a handoff can end is the user's to be told, so the guard passes it on rather than settling it. */
+	it('is told the link did not work when that is what happened', () => {
+		endHandoffSession('linkRefused');
+
+		renderGuarded();
+
+		expect(screen.queryByText('handoff.linkRefused')).not.toBeNull();
 		expect(auth.signinRedirect).not.toHaveBeenCalled();
 	});
 
@@ -63,10 +74,10 @@ describe('a user working in a session handed over from a retailer', () => {
 		renderGuarded();
 
 		act(() => {
-			endHandoffSession();
+			endHandoffSession('sessionOver');
 		});
 
-		expect(screen.queryByText('handoff.sessionEnded')).not.toBeNull();
+		expect(screen.queryByText('handoff.sessionOver')).not.toBeNull();
 		expect(screen.queryByText('the application')).toBeNull();
 		expect(auth.signinRedirect).not.toHaveBeenCalled();
 	});

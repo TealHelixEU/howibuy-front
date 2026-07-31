@@ -2,6 +2,7 @@ import { NavLink } from 'react-router';
 import { useAuth } from 'react-oidc-context';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
+import { useHandoffSessionState } from '@/handoff/useHandoffSessionState';
 import { navItems } from '../navItems';
 import { BrandLogo } from './BrandLogo';
 
@@ -10,6 +11,9 @@ export function TopBar() {
 	const auth = useAuth();
 	const { t } = useTranslation();
 	const email = auth.user?.profile.email ?? auth.user?.profile.name ?? '';
+	// Only a login of the user's own comes with an account to show and to sign out of. A handed-over session has neither: it
+	// belongs to the retailer that opened it and ends on its own.
+	const ownLogin = useHandoffSessionState() === 'none';
 
 	return (
 		<header className="bg-base-100 shadow-[0_1px_0_rgba(0,0,0,0.1)]">
@@ -38,12 +42,16 @@ export function TopBar() {
 						</ul>
 					</nav>
 
-					<span className="hidden h-6 w-px bg-base-300 sm:block" />
-					<span className="hidden text-sm opacity-70 sm:inline">{email}</span>
+					{ownLogin && (
+						<>
+							<span className="hidden h-6 w-px bg-base-300 sm:block" />
+							<span className="hidden text-sm opacity-70 sm:inline">{email}</span>
 
-					<button className="btn btn-primary btn-sm" onClick={() => void auth.signoutRedirect()}>
-						{t('auth.logout')}
-					</button>
+							<button className="btn btn-primary btn-sm" onClick={() => void auth.signoutRedirect()}>
+								{t('auth.logout')}
+							</button>
+						</>
+					)}
 				</div>
 			</div>
 		</header>

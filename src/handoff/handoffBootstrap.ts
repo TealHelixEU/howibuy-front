@@ -1,4 +1,4 @@
-import { redeemTicket } from './handoff';
+import { redeemTicket, wasRefused } from './handoff';
 import { beginHandoffSession, endHandoffSession, resumeHandoffSession } from './handoffSession';
 
 /** The name the retailer puts the ticket under, in the fragment of the URL it sends the user to. */
@@ -21,8 +21,10 @@ export async function bootstrapHandoffSession(): Promise<void> {
 	takeTicketOutOfUrl();
 	try {
 		beginHandoffSession(await redeemTicket(ticket));
-	} catch (_e) {
-		endHandoffSession();
+	} catch (failure) {
+		// A refused ticket is spent or expired, and a new one has to come from the retailer. Anything else leaves it unsaid
+		// whether the ticket was ever presented, which is worth telling the user apart from a link that is known to be dead.
+		endHandoffSession(wasRefused(failure) ? 'linkRefused' : 'serviceUnreachable');
 	}
 }
 

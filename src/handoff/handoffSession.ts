@@ -1,9 +1,15 @@
-import { ApiError } from '@/api/client';
 import { configureAccessTokenSource } from '@/auth/session';
-import { renewSessionToken, type SessionToken } from './handoff';
+import { renewSessionToken, wasRefused, type SessionToken } from './handoff';
+
+/**
+ * How a handed-over session came to be one that cannot be worked in. The three read differently to the user: a link that
+ * was refused never opened a session, a service that could not be reached may yet open one, and a session that is over was
+ * worked in until it ran its course.
+ */
+export type HandoffSessionEnd = 'linkRefused' | 'serviceUnreachable' | 'sessionOver';
 
 /** Whether this tab is in a session handed over from a retailer, and if so whether it can still be worked in. */
-export type HandoffSessionState = 'none' | 'live' | 'ended';
+export type HandoffSessionState = 'none' | 'live' | HandoffSessionEnd;
 
 /**
  * How close to expiry a token is renewed. The window has to be wide enough that the renewal is answered before the token
@@ -15,7 +21,7 @@ const RENEW_WITHIN_MS = 120_000;
 /** The tab, not the browser: a handed-over session is the one the retailer opened, and nothing of it outlives that tab. */
 const STORAGE_KEY = 'howibuy.handoffSession';
 
-type StoredSession = { accessToken: string; expiresAt: number } | { ended: true };
+type StoredSession = { accessToken: string; expiresAt: number } | { ended: HandoffSessionEnd };
 
 let renewal: Promise<string | undefined> | null = null;
 
@@ -56,12 +62,12 @@ export function resumeHandoffSession(): boolean {
 }
 
 /**
- * Mark the handed-over session this tab is in over: the ticket it arrived with did not work, or the session behind it has
- * finished. It goes on answering for the session all the same, so that the user of one is never given the token of another
- * login they have no part in.
+ * Mark the handed-over session this tab is in one that cannot be worked in, and how it came to be that. It goes on
+ * answering for the session all the same, so that the user of one is never given the token of another login they have no
+ * part in.
  */
-export function endHandoffSession(): void {
-	remember({ ended: true });
+export function endHandoffSession(end: HandoffSessionEnd): void {
+	remember({ ended: end });
 	configureAccessTokenSource(handoffAccessToken);
 }
 
@@ -71,9 +77,9 @@ export function handoffSessionState(): HandoffSessionState {
 		return 'none';
 	}
 	if ('ended' in session) {
-		return 'ended';
+		return session.ended;
 	}
-	return session.expiresAt > Date.now() ? 'live' : 'ended';
+	return session.expiresAt > Date.now() ? 'live' : 'sessionOver';
 }
 
 /**
@@ -88,7 +94,7 @@ async function handoffAccessToken(): Promise<string | undefined> {
 	}
 	const msLeft = session.expiresAt - Date.now();
 	if (msLeft <= 0) {
-		remember({ ended: true });
+		remember({ ended: 'sessionOver' });
 		return undefined;
 	}
 	return msLeft > RENEW_WITHIN_MS ? session.accessToken : renew(session.accessToken);
@@ -97,6 +103,9 @@ async function handoffAccessToken(): Promise<string | undefined> {
 /**
  * Whoever wants the token while a renewal is in flight waits for that one rather than starting another: a second renewal
  * would present the token the first has already replaced.
+ *
+ * A refusal is the end of the session, there being no reason the API would renew the same token later. A renewal that
+ * never arrived leaves the session as it was, on a token that has life left in it, for the next request to try again.
  */
 function renew(accessToken: string): Promise<string | undefined> {
 	renewal ??= renewSessionToken(accessToken)
@@ -105,8 +114,8 @@ function renew(accessToken: string): Promise<string | undefined> {
 			return token.accessToken;
 		})
 		.catch((failure: unknown) => {
-			if (isRefusal(failure)) {
-				remember({ ended: true });
+			if (wasRefused(failure)) {
+				remember({ ended: 'sessionOver' });
 				return undefined;
 			}
 			return accessToken;
@@ -115,15 +124,6 @@ function renew(accessToken: string): Promise<string | undefined> {
 			renewal = null;
 		});
 	return renewal;
-}
-
-/**
- * Whether the API refused the token, rather than failing to say anything about it. A refusal ends the session, there being
- * no reason it would renew the same token later; a renewal that never arrived leaves the session as it was, on a token
- * that has life left in it.
- */
-function isRefusal(failure: unknown): boolean {
-	return failure instanceof ApiError && failure.status >= 400 && failure.status < 500;
 }
 
 function asStored(token: SessionToken): StoredSession {

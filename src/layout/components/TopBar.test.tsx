@@ -1,7 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { RouterProvider, createMemoryRouter } from 'react-router';
 import { useAuth } from 'react-oidc-context';
+import { beginHandoffSession } from '@/handoff/handoffSession';
 import { navItems } from '../navItems';
 import { TopBar } from './TopBar';
 
@@ -19,6 +20,10 @@ function renderTopBarAt(path: string, auth: unknown = { user: undefined }) {
 		/>,
 	);
 }
+
+beforeEach(() => {
+	sessionStorage.clear();
+});
 
 describe('TopBar', () => {
 	it('renders a link for every nav item', () => {
@@ -51,5 +56,20 @@ describe('TopBar', () => {
 		renderTopBarAt('/', { user: { profile: { name: 'Bob' } } });
 
 		expect(screen.queryByText('Bob')).not.toBeNull();
+	});
+
+	/**
+	 * A handed-over session belongs to no account here: there is nothing to sign out of, and signing out would send the user
+	 * to an authorization server that knows nothing of the session they are in. Whatever an earlier login of this browser
+	 * left behind is not theirs to be shown either. Getting about the application is unaffected.
+	 */
+	it('offers no account of their own to a user in a handed-over session', () => {
+		beginHandoffSession({ accessToken: 'session-token', expiresInSeconds: 900 });
+
+		renderTopBarAt('/sfc', { user: { profile: { email: 'bob@krusty-krab.com' } } });
+
+		expect(screen.queryByRole('button', { name: 'auth.logout' })).toBeNull();
+		expect(screen.queryByText('bob@krusty-krab.com')).toBeNull();
+		expect(screen.queryByRole('link', { name: 'nav.sfc' })).not.toBeNull();
 	});
 });

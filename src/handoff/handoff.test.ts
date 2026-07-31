@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { configureApiServerHost } from '@/api/client';
-import { redeemTicket, renewSessionToken } from './handoff';
+import { ApiError, configureApiServerHost } from '@/api/client';
+import { redeemTicket, renewSessionToken, wasRefused } from './handoff';
 
 const sessionAccessToken = vi.fn<() => Promise<string | undefined>>();
 
@@ -75,5 +75,17 @@ describe('renewing the token a handed-over session runs on', () => {
 		expect(request.headers.get('Authorization')).toBe('Bearer current-token');
 		expect(sessionAccessToken).not.toHaveBeenCalled();
 		expect(session).toEqual({ accessToken: 'next-token', expiresInSeconds: 900 });
+	});
+});
+
+describe('a failure of a handoff request', () => {
+	/**
+	 * A refusal is the API's verdict on the ticket or the token presented, and will not read differently a moment later. A
+	 * request that never arrived, or a server that broke answering it, is no verdict on anything.
+	 */
+	it('is a refusal only when the API answered it as one', () => {
+		expect(wasRefused(new ApiError(401, 'the ticket cannot be redeemed'))).toBe(true);
+		expect(wasRefused(new ApiError(503, 'come back later'))).toBe(false);
+		expect(wasRefused(new TypeError('Failed to fetch'))).toBe(false);
 	});
 });

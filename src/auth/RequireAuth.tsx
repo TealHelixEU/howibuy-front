@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { useEffect } from 'react';
 import { useAuth } from 'react-oidc-context';
 import { useTranslation } from 'react-i18next';
+import { HandoffSessionEnded } from '@/handoff/components/HandoffSessionEnded';
 import { useHandoffSessionState } from '@/handoff/useHandoffSessionState';
 
 /**
@@ -26,19 +27,18 @@ export function RequireAuth({ children }: { children: ReactNode }) {
 		}
 	}, [auth, handoffSession]);
 
-	// The user of a handed-over session has no login of their own, so there is nowhere to send them but back to the retailer.
-	if (handoffSession === 'ended') {
-		return (
-			<Notice>
-				<div className="alert max-w-md alert-warning">
-					<span>{t('handoff.sessionEnded')}</span>
-				</div>
-			</Notice>
-		);
-	}
-
 	if (handoffSession === 'live') {
 		return <>{children}</>;
+	}
+
+	// Every other handed-over session is one that cannot be worked in, and the user of one has no login of their own to be
+	// sent to instead. Which way it ended is theirs to be told, so it is passed on rather than settled here.
+	if (handoffSession !== 'none') {
+		return (
+			<Notice>
+				<HandoffSessionEnded end={handoffSession} />
+			</Notice>
+		);
 	}
 
 	if (auth.error) {

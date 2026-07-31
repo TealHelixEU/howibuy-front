@@ -21,7 +21,10 @@
 		"logout": "Log out"
 	},
 	"handoff": {
-		"sessionEnded": "This session has ended. Go back to the shop you came from and open HowiBuy again."
+		"linkRefused": "This link has already been used, or it has expired",
+		"serviceUnreachable": "HowiBuy could not be reached just now",
+		"sessionOver": "This session has ended",
+		"returnToShop": "Go back to the shop you came from and open HowiBuy again."
 	},
 	"home": {
 		"title": "Home",
