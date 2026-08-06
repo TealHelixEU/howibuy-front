@@ -6,6 +6,7 @@ import { ProgressBar } from '@/components/ProgressBar';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { CategoryReview } from './components/CategoryReview';
 import { CategoryStrip } from './components/CategoryStrip';
+import { CompleteCompass } from './components/CompleteCompass';
 import { DimensionIcon } from './components/DimensionIcon';
 import { LoadFailure } from './components/LoadFailure';
 import { ScalePicker } from './components/ScalePicker';
@@ -83,6 +84,8 @@ function Category({ category }: { category: CategoryOverview }) {
 			{view?.at === 'review' && <CategoryStrip categories={overview.categories} currentId={categoryId} />}
 
 			<CategoryHeading category={category} view={view} />
+
+			{view?.at === 'review' && <CompleteCompass />}
 
 			{answerFailure !== null && (
 				<div className="alert alert-error">

@@ -74,6 +74,22 @@ describe('the compass screens’ shared state', () => {
 		});
 	});
 
+	it('offers to take the compass again alongside whatever screen is showing', async () => {
+		fetchOverviewMock.mockResolvedValue({
+			...OVERVIEW,
+			attemptStatus: 'COMPLETED',
+			eligibleToStartNewAttempt: true,
+			eligibleAt: '2026-09-05T14:03:00',
+		});
+
+		renderLayout();
+
+		await waitFor(() => {
+			expect(screen.queryByRole('button', { name: 'sfc.again.action' })).not.toBeNull();
+		});
+		expect(screen.queryByText('screen sees 12 answered')).not.toBeNull();
+	});
+
 	it('offers another go when the overview cannot be had, and shows the screen once it can', async () => {
 		fetchOverviewMock
 			.mockRejectedValueOnce(new ApiError(503, 'the API is not answering'))

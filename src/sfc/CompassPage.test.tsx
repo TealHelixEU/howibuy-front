@@ -104,6 +104,18 @@ describe('the compass as a whole', () => {
 		expect(container.querySelector('.card-body strong')?.textContent).toBe('Health');
 	});
 
+	it('offers to commit the compass once every question is answered', () => {
+		renderCompass(overviewOf([category('HEALTH', 'Health', 8, 8), category('ECONOMIC', 'Economic', 3, 3)]));
+
+		expect(screen.queryByRole('button', { name: 'sfc.complete.action' })).not.toBeNull();
+	});
+
+	it('does not offer to commit the compass while anything is unanswered', () => {
+		renderCompass(overviewOf([category('HEALTH', 'Health', 7, 8)]));
+
+		expect(screen.queryByRole('button', { name: 'sfc.complete.action' })).toBeNull();
+	});
+
 	it('invites the user to start, carry on, or review, by how far into a category they are', () => {
 		renderCompass(
 			overviewOf([

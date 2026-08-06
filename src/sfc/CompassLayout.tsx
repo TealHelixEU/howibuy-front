@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { Outlet } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { LoadFailure } from './components/LoadFailure';
+import { TakeAgain } from './components/TakeAgain';
 import type { Compass } from './compassContext';
 import { fetchOverview } from './sfc';
 import { useLoaded } from './useLoaded';
@@ -30,5 +31,10 @@ export function CompassLayout() {
 		);
 	}
 
-	return <Outlet context={{ overview, refresh: reload } satisfies Compass} />;
+	return (
+		<div className="flex flex-col gap-5">
+			<TakeAgain overview={overview} onStarted={reload} />
+			<Outlet context={{ overview, refresh: reload } satisfies Compass} />
+		</div>
+	);
 }

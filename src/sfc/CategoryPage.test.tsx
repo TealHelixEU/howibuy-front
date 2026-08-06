@@ -285,6 +285,17 @@ describe('looking back over a finished category', () => {
 		expect(screen.queryByRole('radio')).toBeNull();
 	});
 
+	it('offers to commit the compass there, when finishing this category finished the whole of it', async () => {
+		fetchNextQuestionMock.mockResolvedValue({ complete: true, question: null });
+		fetchCategoryQuestionsMock.mockResolvedValue([question(1, 'NOT_IMPORTANT')]);
+
+		renderCategory(overviewOf([category(HEALTH_ID, 'HEALTH', 'Health', 8, 8)]));
+
+		await waitFor(() => {
+			expect(screen.queryByRole('button', { name: 'sfc.complete.action' })).not.toBeNull();
+		});
+	});
+
 	it('does not offer to revisit an answer once the compass is completed', async () => {
 		fetchNextQuestionMock.mockResolvedValue({ complete: true, question: null });
 		fetchCategoryQuestionsMock.mockResolvedValue([question(1, 'NOT_IMPORTANT')]);

@@ -58,7 +58,26 @@
 			"revisit": "Revisit answer"
 		},
 		"answerFailed": "That answer could not be saved just now — try again",
-		"answerRefused": "Your completed answers are locked, so this one was not saved"
+		"answerRefused": "Your completed answers are locked, so this one was not saved",
+		"cancel": "Cancel",
+		"complete": {
+			"ready": "You have answered every question.",
+			"action": "Complete the compass",
+			"confirmTitle": "Complete the compass?",
+			"confirmBody": "Your answers become your record and cannot be changed afterwards.",
+			"confirm": "Complete",
+			"incomplete": "Some questions are still unanswered — the categories below show where",
+			"failed": "The compass could not be completed just now"
+		},
+		"again": {
+			"completed": "You have completed the compass.",
+			"action": "Take the compass again",
+			"confirmTitle": "Take the compass again?",
+			"confirmBody": "You start with a blank compass, and the answers you completed are no longer shown here.",
+			"confirm": "Start again",
+			"failed": "A new compass could not be started just now",
+			"notYet": "You can take the compass again on {{when}}"
+		}
 	},
 	"dashboard": {
 		"title": "Dashboard"

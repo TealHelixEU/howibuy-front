@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { ProgressBar } from '@/components/ProgressBar';
 import { CategoryCard } from './components/CategoryCard';
+import { CompleteCompass } from './components/CompleteCompass';
 import { useCompass } from './compassContext';
 import { inPresentationOrder } from './dimensions';
 import { estimatedMinutes } from './estimate';
@@ -35,6 +36,8 @@ export function CompassPage() {
 					className="w-full"
 				/>
 			</section>
+
+			<CompleteCompass />
 
 			<ul className="grid list-none grid-cols-1 gap-4 p-0 md:grid-cols-2 xl:grid-cols-3">
 				{categories.map((one) => (
