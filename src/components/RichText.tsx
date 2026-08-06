@@ -5,6 +5,6 @@
  * application's own source and is inserted without sanitizing. This is the only place that assumes that: if the compass
  * ever serves content from anywhere a user can reach, sanitizing belongs here.
  */
-export function RichText({ html, className }: { html: string; className?: string }) {
-	return <div className={className} dangerouslySetInnerHTML={{ __html: html }} />;
+export function RichText({ html, className, id }: { html: string; className?: string; id?: string }) {
+	return <div id={id} className={className} dangerouslySetInnerHTML={{ __html: html }} />;
 }

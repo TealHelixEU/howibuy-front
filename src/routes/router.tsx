@@ -4,6 +4,7 @@ import { AppLayout } from '@/layout/AppLayout';
 import { DashboardPage } from '@/dashboard/DashboardPage';
 import { HomePage } from '@/pages/HomePage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
+import { CategoryPage } from '@/sfc/CategoryPage';
 import { CompassLayout } from '@/sfc/CompassLayout';
 import { CompassPage } from '@/sfc/CompassPage';
 
@@ -22,7 +23,10 @@ export const routes: RouteObject[] = [
 				path: 'sfc',
 				element: <CompassLayout />,
 				handle: { titleKey: 'sfc.title' },
-				children: [{ index: true, element: <CompassPage /> }],
+				children: [
+					{ index: true, element: <CompassPage /> },
+					{ path: ':categoryId', element: <CategoryPage /> },
+				],
 			},
 			{ path: 'dashboard', element: <DashboardPage />, handle: { titleKey: 'dashboard.title' } },
 			// Feature routes get added here.

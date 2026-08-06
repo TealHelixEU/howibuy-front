@@ -50,7 +50,15 @@
 			"start": "Start",
 			"continue": "Continue",
 			"review": "Review answers"
-		}
+		},
+		"question": {
+			"position": "question {{position}} of {{total}}",
+			"previous": "‹ Previous question",
+			"backToCurrent": "‹ Back to where you were",
+			"revisit": "Revisit answer"
+		},
+		"answerFailed": "That answer could not be saved just now — try again",
+		"answerRefused": "Your completed answers are locked, so this one was not saved"
 	},
 	"dashboard": {
 		"title": "Dashboard"
