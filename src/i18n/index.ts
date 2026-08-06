@@ -21,3 +21,12 @@ export function configureI18n(lng: string): Promise<TFunction> {
 		},
 	});
 }
+
+/**
+ * The language the application is showing, for the requests that ask the API for content in it. The API serves a closed
+ * set of languages and refuses anything else outright, so what is asked for is the language this application itself has
+ * resources for — never the browser's preference, which it may have none for.
+ */
+export function currentLanguage(): string {
+	return i18next.language;
+}
