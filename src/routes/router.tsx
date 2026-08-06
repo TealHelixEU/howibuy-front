@@ -4,7 +4,8 @@ import { AppLayout } from '@/layout/AppLayout';
 import { DashboardPage } from '@/dashboard/DashboardPage';
 import { HomePage } from '@/pages/HomePage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
-import { SfcPage } from '@/sfc/SfcPage';
+import { CompassLayout } from '@/sfc/CompassLayout';
+import { CompassPage } from '@/sfc/CompassPage';
 
 export const routes: RouteObject[] = [
 	{
@@ -17,7 +18,12 @@ export const routes: RouteObject[] = [
 		children: [
 			// `handle.titleKey` names the i18n key the page-title band renders.
 			{ index: true, element: <HomePage />, handle: { titleKey: 'home.title' } },
-			{ path: 'sfc', element: <SfcPage />, handle: { titleKey: 'sfc.title' } },
+			{
+				path: 'sfc',
+				element: <CompassLayout />,
+				handle: { titleKey: 'sfc.title' },
+				children: [{ index: true, element: <CompassPage /> }],
+			},
 			{ path: 'dashboard', element: <DashboardPage />, handle: { titleKey: 'dashboard.title' } },
 			// Feature routes get added here.
 		],

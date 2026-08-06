@@ -7,6 +7,8 @@ vi.mock('react-oidc-context', () => ({
 	useAuth: () => ({ isAuthenticated: true, user: undefined }),
 }));
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
+// The compass asks the API for its overview as soon as it renders; leaving that unanswered keeps this about the routes.
+vi.mock('@/sfc/sfc', () => ({ fetchOverview: () => new Promise(() => {}) }));
 
 function renderAt(path: string) {
 	return render(<RouterProvider router={createMemoryRouter(routes, { initialEntries: [path] })} />);

@@ -33,7 +33,24 @@
 		"apiServer": "API server"
 	},
 	"sfc": {
-		"title": "SFC"
+		"title": "Sustainable Food Compass",
+		"loading": "Loading the compass…",
+		"loadFailed": "The compass could not be loaded just now",
+		"retry": "Try again",
+		"progress": {
+			"overall": "{{answered}} of {{total}} answered · {{percentage}}%",
+			"overallLabel": "Overall progress",
+			"category": "{{answered}} of {{total}}"
+		},
+		"estimate": {
+			"total": "about {{minutes}} min in total",
+			"category": "about {{minutes}} min"
+		},
+		"category": {
+			"start": "Start",
+			"continue": "Continue",
+			"review": "Review answers"
+		}
 	},
 	"dashboard": {
 		"title": "Dashboard"
