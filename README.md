@@ -41,33 +41,47 @@ be edited per-deployment without a rebuild).
 | API base URL        | `VITE_API_SERVER_HOST`  | `http://localhost:8180/api/howibuy/v1`     |
 | OIDC client id      | `VITE_OIDC_CLIENT_ID`   | `howibuy`                                  |
 
-## Required backend / Keycloak setup
+## Backend / Keycloak setup
 
-**The front-end cannot log in until these one-time changes are made.** Neither is done yet.
+Logging in works in dev. What makes it work lives in `../tealhelix`, and is worth knowing when it stops
+working.
 
-### 1. Keycloak `howibuy` client (realm `tealhelix`)
+### Keycloak `howibuy` client (realm `tealhelix`)
 
-The realm already ships a public `howibuy` client
-(`tealhelix-docker/tealhelix-docker-keycloak/src/main/docker/tealhelix-realm.json`), but its only
-redirect URI is `http://localhost:8180/howibuy/`. Add the SPA origin:
+The realm's public `howibuy` client
+(`tealhelix-docker/tealhelix-docker-keycloak/src/main/docker/tealhelix-realm.json`) carries:
 
-- **Valid redirect URIs**: add `http://localhost:5175/*` (plus your prod origin)
-- **Valid post logout redirect URIs**: add `http://localhost:5175/*`
-- **Web origins**: `http://localhost:5175` (the realm export currently has `/*`)
+- **Valid redirect URIs**: `http://localhost:5175/*` alongside `http://localhost:8180/howibuy/`. A prod
+  origin still has to be added when there is one.
+- **Post logout redirect URIs** and **web origins**: `+`, i.e. whatever the redirect URIs allow
 - **PKCE**: `S256` (Advanced → Proof Key for Code Exchange Code Challenge Method) — `oidc-client-ts`
-  always sends a code challenge; setting it on the client enforces it
+  always sends a code challenge, and the client enforces it
 
-Make the change in `tealhelix-realm.json` so it survives a container rebuild, not just in the admin console.
+Changes belong in `tealhelix-realm.json`, not only in the admin console, so they survive a container
+rebuild.
 
-### 2. Backend CORS
+### Backend CORS
 
-`howibuy-container/howibuy/src/main/resources/application.properties` has no CORS configuration at
-all, so browser calls from `:5175` to `:8180` will be blocked. Add:
+`application.properties` allows the SPA origin in dev
+(`%dev.quarkus.http.cors.origins=http://localhost:5175`); the production value is deliberately empty.
 
-```properties
-quarkus.http.cors.enabled=true
-%dev.quarkus.http.cors.origins=http://localhost:5175
-```
+### Only the development user can log in
+
+Every end-user endpoint resolves the token's subject against `TH_USER_PROFILE.idm_id`, and nothing in the
+backend provisions that from the IDM. A `@dev`-context Liquibase changeset seeds one profile, for
+`bob@krusty-krab.com`; any other realm user is refused with 401. Real provisioning is outstanding backend
+work — "login works in dev" is not "login works".
+
+### Two dev-only settings
+
+| Setting | Dev | Otherwise |
+| --- | --- | --- |
+| `sfc.stability-window` | `PT1M` | `P30D` |
+| Liquibase contexts | `@dev,appdata` | `appdata` |
+
+Thirty days puts the compass's take-it-again path out of reach of any sitting, hence the minute. Both
+follow from starting the API through the `howibuy-quarkus-dev` Maven profile, which puts Quarkus in its
+`dev` profile.
 
 ## Project layout
 
@@ -80,6 +94,7 @@ src/
   layout/     AppLayout (daisyUI drawer) + nav item registry
   pages/      route screens
   routes/     react-router route tree
+  sfc/        Sustainable Food Compass: the questionnaire and its screens
   main.tsx    bootstrap: load config → configure auth/api/i18n → render
 ```
 

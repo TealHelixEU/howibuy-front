@@ -59,6 +59,7 @@ src/
   i18n/              en.json (only locale) + setup
   layout/            AppLayout + routeTitle.ts (page-title lookup)
     components/      TopBar, BrandLogo, PageTitleBand, FundingStrip, SiteInfoStrip
+  sfc/               Sustainable Food Compass — the questionnaire
   pages/ routes/
 ```
 
@@ -66,6 +67,12 @@ src/
 feature folder**. The moment it imports from a feature, it belongs under that feature's `components/`.
 
 Tests are co-located next to what they test and use relative imports (`./X`) so they move with the file.
+
+## Coding conventions
+
+- Imports:
+	- Avoid `from '../file'` imports; when you want to import a shared piece of code from a higher directory, use the full path
+	- `'./file'` is fine
 
 ## Visual design
 
@@ -111,6 +118,19 @@ Deliberately *not* copied from the site: social links, the scroll-to-top control
 Each feature's `<feature>.ts` wraps `apiFetch` from `@/api/client`. `apiFetch` attaches the bearer token,
 returns `undefined` for 204, and throws `ApiError` (carrying `.status`) on any non-2xx.
 
+**Screens fetch from route *elements*, never from react-router loaders.** `RequireAuth` is the element of
+the `/` route, and loaders for a matched tree all run *before* any of it renders — so a loader would ask
+the API before the guard had established a session and `getAccessToken()` had anything to give. State a
+feature's screens share is loaded by a layout route element and passed down with `<Outlet context>`; see
+`sfc/CompassLayout.tsx`. `sfc/useLoaded.ts` is the loading/failure/reload triad those elements use: it
+takes a `useCallback`-stable loader, blanks when *what* it loads changes but not when merely reloading,
+and drops an answer that a later request has overtaken.
+
+Content the API serves as rich text goes through `components/RichText.tsx`, which inserts it as HTML
+**without sanitizing** — the content is authored in `../tealhelix` and seeded from there, so it is trusted
+as far as this app's own source. That component is the one place to change if content ever comes from
+anywhere a user can reach.
+
 ## Auth & config
 
 Login is OIDC (Authorization Code + PKCE) against the Keycloak realm `tealhelix` using the public client
@@ -121,8 +141,11 @@ Runtime config (`authServerHost`, `apiServerHost`, `oidcClientId`) is loaded at 
 fallback → `.env.*` → `public/config.json`. The local-dev fallback in `config/model.ts` points at Keycloak
 on `:8280` and the API on `:8180`.
 
-**Not wired up yet:** the Keycloak `howibuy` client has no `http://localhost:5175/*` redirect URI and the
-backend has no CORS configuration, so a real login has never been exercised. See README.md.
+The realm's `howibuy` client now carries the `http://localhost:5175/*` redirect URI and the backend allows
+the SPA origin in dev, so a real login works — but **only for the realm's development user**. Every
+end-user endpoint resolves the token's subject against `TH_USER_PROFILE.idm_id`, and nothing provisions
+that from Keycloak; a `@dev` changeset seeds one row for `bob@krusty-krab.com`. Any other realm user gets 401.
+See README.md.
 
 ## Testing conventions
 
