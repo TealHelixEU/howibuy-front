@@ -22,4 +22,19 @@ describe('FundingStrip', () => {
 
 		expect(screen.getByText('layout.funding.title').className).not.toContain('hidden');
 	});
+
+	it('scales the flag, the statement and the padding down below md', () => {
+		const { container } = render(<FundingStrip />);
+
+		expect(container.firstElementChild?.className).toContain('py-3');
+		expect(container.firstElementChild?.className).toContain('md:py-5');
+
+		const flag = screen.getByAltText('layout.funding.flagAlt');
+		expect(flag.className).toContain('w-16');
+		expect(flag.className).toContain('md:w-[100px]');
+
+		const title = screen.getByText('layout.funding.title');
+		expect(title.className).toContain('text-[17px]');
+		expect(title.className).toContain('md:text-[20px]');
+	});
 });
