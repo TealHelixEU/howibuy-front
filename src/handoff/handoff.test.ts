@@ -80,11 +80,14 @@ describe('renewing the token a handed-over session runs on', () => {
 
 describe('a failure of a handoff request', () => {
 	/**
-	 * A refusal is the API's verdict on the ticket or the token presented, and will not read differently a moment later. A
-	 * request that never arrived, or a server that broke answering it, is no verdict on anything.
+	 * A refusal is the API's verdict on the ticket or the token presented, and will not read differently a moment later. The
+	 * API gives that verdict as a 401 and gives it no other way, so everything else is no verdict on anything: a request that
+	 * never arrived, a server that broke answering it, and whatever stands between the browser and the API turning a request
+	 * away before the API ever sees it.
 	 */
 	it('is a refusal only when the API answered it as one', () => {
 		expect(wasRefused(new ApiError(401, 'the ticket cannot be redeemed'))).toBe(true);
+		expect(wasRefused(new ApiError(403, 'turned away before the API saw it'))).toBe(false);
 		expect(wasRefused(new ApiError(503, 'come back later'))).toBe(false);
 		expect(wasRefused(new TypeError('Failed to fetch'))).toBe(false);
 	});

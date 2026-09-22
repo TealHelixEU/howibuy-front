@@ -16,6 +16,9 @@ vi.mock('./handoff', async (importOriginal) => ({
 const REDEEMED: SessionToken = { accessToken: 'session-token', expiresInSeconds: 900 };
 const RENEWED: SessionToken = { accessToken: 'next-token', expiresInSeconds: 900 };
 
+/** Kept quiet so that what a test drives on purpose does not read as something wrong with the run. */
+const warned = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
 /**
  * The application as a freshly loaded page sees it — every module run again from nothing, while whatever the tab remembers
  * of a handed-over session is still there. Only a reload is told by this; the rest of these tests are one page load, which
@@ -39,6 +42,7 @@ beforeEach(() => {
 	sessionStorage.clear();
 	renewSessionToken.mockReset();
 	renewSessionToken.mockResolvedValue(RENEWED);
+	warned.mockClear();
 });
 
 afterEach(() => {
@@ -90,6 +94,7 @@ describe('the token a handed-over session runs on', () => {
 		expect(await getAccessToken()).toBe('next-token');
 		expect(await getAccessToken()).toBe('next-token');
 		expect(renewSessionToken).toHaveBeenCalledExactlyOnceWith('session-token');
+		expect(warned).not.toHaveBeenCalled();
 	});
 
 	/**
@@ -140,25 +145,32 @@ describe('a handed-over session that is over', () => {
 	/** How the end of the session — which the application is never told — makes itself known. */
 	it('is over once the API refuses to renew it', async () => {
 		beginHandoffSession(REDEEMED);
-		renewSessionToken.mockRejectedValue(new ApiError(401, 'the token cannot be renewed'));
+		const refusal = new ApiError(401, 'the token cannot be renewed');
+		renewSessionToken.mockRejectedValue(refusal);
 
 		secondsBeforeExpiry(60);
 
 		expect(await getAccessToken()).toBeUndefined();
 		expect(handoffSessionState()).toBe('sessionOver');
+		expect(warned).toHaveBeenCalledExactlyOnceWith('The handed-over session could not be renewed', refusal);
 	});
 
 	/**
 	 * A renewal that never reached the API says nothing about the session: the token it was to replace is still good for a
 	 * while, so the session runs on it and the next request renews again.
+	 *
+	 * A session that carries on regardless is one whose failed renewals nothing on the screen would ever show, so the failure
+	 * goes to the console: a session ending at the expiry of its token, rather than at the end it was given, is read there.
 	 */
 	it('is not over because a renewal could not be delivered', async () => {
 		beginHandoffSession(REDEEMED);
-		renewSessionToken.mockRejectedValue(new TypeError('Failed to fetch'));
+		const failure = new TypeError('Failed to fetch');
+		renewSessionToken.mockRejectedValue(failure);
 
 		secondsBeforeExpiry(60);
 
 		expect(await getAccessToken()).toBe('session-token');
 		expect(handoffSessionState()).toBe('live');
+		expect(warned).toHaveBeenCalledExactlyOnceWith('The handed-over session could not be renewed', failure);
 	});
 });

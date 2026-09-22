@@ -19,6 +19,9 @@ vi.mock('@/auth/userManager', () => ({ getAccessToken: () => Promise.resolve('a-
 
 const REDEEMED: SessionToken = { accessToken: 'session-token', expiresInSeconds: 900 };
 
+/** Kept quiet so that what a test drives on purpose does not read as something wrong with the run. */
+const warned = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
 /**
  * The application as a freshly loaded page sees it — every module run again from nothing, while whatever the tab remembers
  * of a handed-over session is still there. Only what a page load starts from is told by this; the rest of these tests drive
@@ -43,6 +46,7 @@ beforeEach(() => {
 	arriveAt('/sfc');
 	redeemTicket.mockReset();
 	redeemTicket.mockResolvedValue(REDEEMED);
+	warned.mockClear();
 });
 
 describe('a user the retailer sent over with a ticket', () => {
@@ -54,6 +58,7 @@ describe('a user the retailer sent over with a ticket', () => {
 		expect(redeemTicket).toHaveBeenCalledExactlyOnceWith('a-ticket');
 		expect(handoffSessionState()).toBe('live');
 		expect(await getAccessToken()).toBe('session-token');
+		expect(warned).not.toHaveBeenCalled();
 	});
 
 	/**
@@ -83,25 +88,33 @@ describe('a user the retailer sent over with a ticket', () => {
 	 */
 	it('is left knowing the link did not work when the ticket was refused', async () => {
 		arriveAt('/sfc#ticket=a-ticket-already-spent');
-		redeemTicket.mockRejectedValue(new ApiError(401, 'the ticket cannot be redeemed'));
+		const refusal = new ApiError(401, 'the ticket cannot be redeemed');
+		redeemTicket.mockRejectedValue(refusal);
 
 		await bootstrapHandoffSession();
 
 		expect(handoffSessionState()).toBe('linkRefused');
 		expect(await getAccessToken()).toBeUndefined();
+		expect(warned).toHaveBeenCalledExactlyOnceWith('The handoff ticket could not be redeemed', refusal);
 	});
 
 	/**
 	 * A redeem that got no answer says nothing about the ticket, which may well have been good. The user is told that much,
 	 * so that trying again from the shop is worth their while rather than a puzzle.
+	 *
+	 * What the user is told is what they can act on, which is never the whole of what happened. The failure itself goes to
+	 * the console, because only the status it carries tells a ticket the API refused from a request something between the
+	 * browser and the API turned away — and the two want doing something about by different people.
 	 */
 	it('is left knowing the service was unreachable when the redeem got no answer', async () => {
 		arriveAt('/sfc#ticket=a-ticket');
-		redeemTicket.mockRejectedValue(new TypeError('Failed to fetch'));
+		const failure = new TypeError('Failed to fetch');
+		redeemTicket.mockRejectedValue(failure);
 
 		await bootstrapHandoffSession();
 
 		expect(handoffSessionState()).toBe('serviceUnreachable');
+		expect(warned).toHaveBeenCalledExactlyOnceWith('The handoff ticket could not be redeemed', failure);
 	});
 
 	/**

@@ -114,6 +114,8 @@ function renew(accessToken: string): Promise<string | undefined> {
 			return token.accessToken;
 		})
 		.catch((failure: unknown) => {
+			// A renewal that failed shows on the screen only when it ended the session, and even then not as what it was.
+			console.warn('The handed-over session could not be renewed', failure);
 			if (wasRefused(failure)) {
 				remember({ ended: 'sessionOver' });
 				return undefined;

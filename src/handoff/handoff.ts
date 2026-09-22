@@ -36,13 +36,17 @@ export async function renewSessionToken(accessToken: string): Promise<SessionTok
 	);
 }
 
+/** The one status the API answers with when it has judged a ticket or a token and found it no good. */
+const REFUSED = 401;
+
 /**
  * Whether the API refused what was presented to it, rather than never having answered about it. A refusal is its verdict on
- * a ticket or a token and will read the same a moment later; a request that never arrived is no verdict at all, and leaves
- * whatever it carried as good as it was.
+ * a ticket or a token and will read the same a moment later; anything else is no verdict at all, and leaves whatever the
+ * request carried as good as it was — a request that never arrived, and equally one that whatever stands between the browser
+ * and the API turned away before the API could see it.
  */
 export function wasRefused(failure: unknown): boolean {
-	return failure instanceof ApiError && failure.status >= 400 && failure.status < 500;
+	return failure instanceof ApiError && failure.status === REFUSED;
 }
 
 function toSessionToken(response: SessionTokenResponse): SessionToken {
