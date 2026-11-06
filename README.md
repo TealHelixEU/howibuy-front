@@ -65,12 +65,12 @@ rebuild.
 `application.properties` allows the SPA origin in dev
 (`%dev.quarkus.http.cors.origins=http://localhost:5175`); the production value is deliberately empty.
 
-### Only the development user can log in
+### Any realm user can log in
 
-Every end-user endpoint resolves the token's subject against `TH_USER_PROFILE.idm_id`, and nothing in the
-backend provisions that from the IDM. A `@dev`-context Liquibase changeset seeds one profile, for
-`bob@krusty-krab.com`; any other realm user is refused with 401. Real provisioning is outstanding backend
-work — "login works in dev" is not "login works".
+Every end-user endpoint resolves the token's subject against `TH_USER_PROFILE.idm_id`, and the backend
+creates that profile the first time a realm user calls it, so there is no provisioning step. A
+`@dev`-context Liquibase changeset seeds the profile of the development user, `bob@krusty-krab.com`,
+only to give it an internal id known in advance (the same as its subject).
 
 ### Two dev-only settings
 
@@ -89,21 +89,27 @@ follow from starting the API through the `howibuy-quarkus-dev` Maven profile, wh
 src/
   api/        fetch wrapper that attaches the bearer token (apiFetch)
   auth/       UserManager (oidc-client-ts), RequireAuth guard
+  components/ UI components shared by the screens (ConfirmDialog, ProgressBar, RichText)
   config/     runtime/env app config loading + jotai atoms
+  dashboard/  the user's dashboard (a placeholder)
+  handoff/    sessions a retailer hands over: redeeming the ticket, renewing the token
   i18n/       react-i18next setup + translations
   layout/     AppLayout (daisyUI drawer) + nav item registry
   pages/      route screens
   routes/     react-router route tree
   sfc/        Sustainable Food Compass: the questionnaire and its screens
-  main.tsx    bootstrap: load config → configure auth/api/i18n → render
+  main.tsx    bootstrap: load config → configure auth/api/i18n → start a handed-over session → render
 ```
 
 Adding a screen is: a page under `pages/` (or a feature folder), a route in `routes/router.tsx`,
 and an entry in `layout/navItems.ts`.
 
-The whole app sits behind `RequireAuth`; the realm defines no application roles, so there is no
-role gate. The current Home page is a placeholder that proves the bootstrap chain works — the visual
-design is still open.
+The whole app sits behind `RequireAuth`, which admits one of two sessions: the user's own OIDC login,
+or a session a retailer hands over by sending the user here with a one-time ticket in the URL fragment
+(`#ticket=...`), which the app redeems at the API's `/handoff/redeem`. There is no role gate: the realm's
+roles (`retailer`, `catalogue-sync`, `operator`) govern what retailer backends and operators may do in
+the API, and the users of this app need none. The current Home page is a placeholder that proves the
+bootstrap chain works — the visual design is still open.
 
 ## Docker deploy
 

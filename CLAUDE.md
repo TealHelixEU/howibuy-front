@@ -134,18 +134,17 @@ anywhere a user can reach.
 ## Auth & config
 
 Login is OIDC (Authorization Code + PKCE) against the Keycloak realm `tealhelix` using the public client
-`howibuy`. The whole route tree is behind `RequireAuth`; the realm defines no application roles, so there
-is no role gate — add one only when the backend grows roles.
+`howibuy`. The whole route tree is behind `RequireAuth`, which admits the user's own login or a session a
+retailer handed over (`handoff/`). There is no role gate: the realm's roles (`retailer`, `catalogue-sync`,
+`operator`) govern what retailer backends and operators may do in the API, and the users of this app need none.
 
 Runtime config (`authServerHost`, `apiServerHost`, `oidcClientId`) is loaded at startup and resolves
 fallback → `.env.*` → `public/config.json`. The local-dev fallback in `config/model.ts` points at Keycloak
 on `:8280` and the API on `:8180`.
 
-The realm's `howibuy` client now carries the `http://localhost:5175/*` redirect URI and the backend allows
-the SPA origin in dev, so a real login works — but **only for the realm's development user**. Every
-end-user endpoint resolves the token's subject against `TH_USER_PROFILE.idm_id`, and nothing provisions
-that from Keycloak; a `@dev` changeset seeds one row for `bob@krusty-krab.com`. Any other realm user gets 401.
-See README.md.
+The realm's `howibuy` client carries the `http://localhost:5175/*` redirect URI and the backend allows the
+SPA origin in dev, so a real login works for any realm user: the backend creates the user's
+`TH_USER_PROFILE` row on their first call. See README.md.
 
 ## Testing conventions
 
