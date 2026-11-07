@@ -79,6 +79,7 @@ function overviewOf(categories: CategoryOverview[], attemptStatus: AttemptStatus
 		categories,
 		scaleLabels: LABELS,
 		attemptStatus,
+		hasCompletedAttempt: attemptStatus === 'COMPLETED',
 		eligibleToStartNewAttempt: false,
 		eligibleAt: null,
 	};

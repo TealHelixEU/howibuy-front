@@ -46,6 +46,7 @@ function overviewOf(categories: CategoryOverview[]): CompassOverview {
 			EXTREMELY_IMPORTANT: 'Extremely important',
 		},
 		attemptStatus: 'IN_PROGRESS',
+		hasCompletedAttempt: false,
 		eligibleToStartNewAttempt: false,
 		eligibleAt: null,
 	};

@@ -75,7 +75,60 @@
 		}
 	},
 	"dashboard": {
-		"title": "Dashboard"
+		"title": "Dashboard",
+		"loading": "Loading the dashboard…",
+		"loadFailed": "The dashboard could not be loaded just now",
+		"dimension": {
+			"environment": "Environment",
+			"socioEconomic": "Socio-economic",
+			"health": "Health",
+			"animalWelfare": "Animal welfare"
+		},
+		"invitation": {
+			"start": {
+				"title": "Match your baskets to what matters to you",
+				"text": "Until you complete the Sustainable Food Compass, your baskets are matched against an expert weighting, not your own priorities.",
+				"action": "Take the compass"
+			},
+			"firstAttempt": {
+				"title": "Finish the compass to match your baskets to your priorities",
+				"text": "Until you complete it, your baskets are matched against an expert weighting, not your own priorities."
+			},
+			"retake": {
+				"title": "Finish the compass to update your priorities",
+				"text": "Until you complete it, your baskets are matched against the priorities you gave last time."
+			},
+			"continue": "Continue the compass"
+		},
+		"totals": "Your totals",
+		"xp": {
+			"title": "XP",
+			"unit": "XP",
+			"ahead": "Ahead of {{share, number(style: percent)}} of shoppers",
+			"explain": "How XP works",
+			"earning": "You earn {{xp, number}} XP for each product you buy that scores high for sustainability, and a bonus when a whole basket scores well.",
+			"compared": "The shoppers you are compared with are everyone who has bought at least once, at any shop that uses HowiBuy.",
+			"rule": "Earn {{xp, number}} XP for each product that scores high for sustainability, and a bonus when a whole basket scores well."
+		},
+		"streak": {
+			"title": "Streak",
+			"unit_one": "basket in a row",
+			"unit_other": "baskets in a row",
+			"explain": "How the streak works",
+			"earning": "A basket keeps your streak going when at least one of its products scores high for sustainability. A basket without one starts the count again.",
+			"rule": "Buy a product that scores high for sustainability in every basket to keep a streak going."
+		},
+		"badges": {
+			"title": "Badges",
+			"ofAll": "of {{total, number}}",
+			"closest_one": "Closest: <strong>{{label}}</strong>, {{count, number}} product to go",
+			"closest_other": "Closest: <strong>{{label}}</strong>, {{count, number}} products to go",
+			"rule": "Earn one for {{first, number}}, {{second, number}} and {{third, number}} products that score high in one dimension."
+		},
+		"empty": {
+			"title": "Your first purchase starts the count",
+			"text": "Every purchase your shop registers with HowiBuy adds to this page."
+		}
 	},
 	"notFound": {
 		"title": "Page not found",

@@ -39,6 +39,7 @@ function overview(
 			EXTREMELY_IMPORTANT: 'Extremely important',
 		},
 		attemptStatus,
+		hasCompletedAttempt: attemptStatus === 'COMPLETED',
 		eligibleToStartNewAttempt,
 		eligibleAt,
 	};

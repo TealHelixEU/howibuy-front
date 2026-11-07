@@ -89,9 +89,9 @@ follow from starting the API through the `howibuy-quarkus-dev` Maven profile, wh
 src/
   api/        fetch wrapper that attaches the bearer token (apiFetch); a screen's load and reload (useLoaded)
   auth/       UserManager (oidc-client-ts), RequireAuth guard
-  components/ UI components shared by the screens (ConfirmDialog, LoadFailure, ProgressBar, RichText)
+  components/ UI components shared by the screens (ConfirmDialog, Explanation, LoadFailure, ProgressBar, RichText)
   config/     runtime/env app config loading + jotai atoms
-  dashboard/  the user's dashboard (a placeholder)
+  dashboard/  the user's dashboard
   handoff/    sessions a retailer hands over: redeeming the ticket, renewing the token
   i18n/       react-i18next setup + translations
   layout/     AppLayout (daisyUI drawer) + nav item registry

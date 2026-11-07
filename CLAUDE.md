@@ -73,6 +73,9 @@ Tests are co-located next to what they test and use relative imports (`./X`) so 
 - Imports:
 	- Avoid `from '../file'` imports; when you want to import a shared piece of code from a higher directory, use the full path
 	- `'./file'` is fine
+- A component's properties are an `interface` named after it, `<Component>Props`, declared just above the component
+  (see `layout/components/PageTitleBand.tsx`); this holds for a file's private components too. A component that takes
+  no properties takes no parameter.
 
 ## Visual design
 
@@ -153,6 +156,10 @@ SPA origin in dev, so a real login works for any realm user: the backend creates
   `el.className).toContain(...)` — not `toBeInTheDocument`/`toHaveClass`.
 - Mock `react-i18next` with a manual factory so keys pass through:
   `vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }))`.
+  A component that renders `<Trans>` needs it in the factory too; `dashboard/components/Totals.test.tsx` has
+  one that also shows the values passed, so a test can see them.
 - Mock the **data-layer module** (`vi.mock('@/<feature>/<feature>')`), not global `fetch`.
 - All UI strings go through `t('feature.key')`, defined in `src/i18n/en.json`, grouped by feature.
-  There is one locale today; add keys, don't hardcode strings.
+  There is one locale today; add keys, don't hardcode strings. A number inside a string is formatted
+  there (`{{count, number}}`), which i18next does with `Intl` in the UI's language; a count that changes
+  the words takes `_one`/`_other` keys; a word set in bold inside a sentence goes through `<Trans>`.

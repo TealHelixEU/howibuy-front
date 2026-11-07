@@ -37,6 +37,7 @@ function overview(answered: number, total: number, attemptStatus: AttemptStatus 
 			EXTREMELY_IMPORTANT: 'Extremely important',
 		},
 		attemptStatus,
+		hasCompletedAttempt: attemptStatus === 'COMPLETED',
 		eligibleToStartNewAttempt: false,
 		eligibleAt: null,
 	};

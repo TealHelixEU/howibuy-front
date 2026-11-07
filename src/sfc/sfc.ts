@@ -55,6 +55,8 @@ export interface CompassOverview {
 	scaleLabels: Record<ScaleOption, string>;
 	/** Null until the user has ever started an attempt. */
 	attemptStatus: AttemptStatus | null;
+	/** Whether the user has ever completed an attempt: true also while a later one, a retake, is in progress. */
+	hasCompletedAttempt: boolean;
 	eligibleToStartNewAttempt: boolean;
 	/**
 	 * When the stability window of the latest completed attempt ends, null while there is no completed attempt to wait

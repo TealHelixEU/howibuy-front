@@ -33,6 +33,7 @@ const OVERVIEW: CompassOverview = {
 		EXTREMELY_IMPORTANT: 'Extremely important',
 	},
 	attemptStatus: 'IN_PROGRESS',
+	hasCompletedAttempt: false,
 	eligibleToStartNewAttempt: false,
 	eligibleAt: null,
 };
@@ -78,6 +79,7 @@ describe('the compass screens’ shared state', () => {
 		fetchOverviewMock.mockResolvedValue({
 			...OVERVIEW,
 			attemptStatus: 'COMPLETED',
+			hasCompletedAttempt: true,
 			eligibleToStartNewAttempt: true,
 			eligibleAt: '2026-09-05T14:03:00',
 		});
