@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import type { HandoffSessionEnd } from '../handoffSession';
+import type { HandoffSessionEnd } from '@/handoff/handoffSession';
 import { HandoffSessionEnded } from './HandoffSessionEnded';
 
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));

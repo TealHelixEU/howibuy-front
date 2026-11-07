@@ -3,7 +3,7 @@ import { useAuth } from 'react-oidc-context';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import { useHandoffSessionState } from '@/handoff/useHandoffSessionState';
-import { navItems } from '../navItems';
+import { navItems } from '@/layout/navItems';
 import { BrandLogo } from './BrandLogo';
 
 /** Logo left, navigation and account actions right, on a single 66px row. */

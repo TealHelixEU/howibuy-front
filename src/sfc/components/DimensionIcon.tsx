@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 import { FaCoins, FaCow, FaHeartPulse, FaLeaf, FaPeopleGroup } from 'react-icons/fa6';
-import type { SustainabilityDimension } from '../sfc';
+import type { SustainabilityDimension } from '@/sfc/sfc';
 
 /**
  * A mark per dimension, so a category is recognised before it is read. Held as elements keyed by dimension, which makes

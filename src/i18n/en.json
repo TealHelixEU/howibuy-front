@@ -128,6 +128,23 @@
 		"empty": {
 			"title": "Your first purchase starts the count",
 			"text": "Every purchase your shop registers with HowiBuy adds to this page."
+		},
+		"month": {
+			"title": "This month",
+			"note": "{{current}} so far, against {{previous}}",
+			"text": "The average score, from 0 to 1, of the products you bought, per dimension.",
+			"nothingThisMonth": "Nothing bought yet in {{current}}. {{previous}}’s averages stay here until your first purchase this month.",
+			"nothingLastMonth": "You bought nothing in {{previous}}, so there is no change to show yet.",
+			"nothingEither": "Nothing bought in {{previous}}, nor yet in {{current}}.",
+			"firstPurchase": "Each month’s averages show here from your first purchase.",
+			"footnote": "Bar: {{current}} so far. Tick: {{previous}}. A purchase counts in the month of its date.",
+			"noAverage": "–",
+			"previousAverage": "{{previous}} {{average, number(minimumFractionDigits: 2; maximumFractionDigits: 2)}}",
+			"noPurchases": "No purchases in {{previous}}",
+			"bar": "{{dimension}}: {{thisMonth}}, {{lastMonth}}",
+			"barThisMonth": "{{current}} so far {{average, number(minimumFractionDigits: 2; maximumFractionDigits: 2)}}",
+			"barThisMonthNothing": "{{current}} so far nothing bought",
+			"barLastMonthNothing": "{{previous}} nothing bought"
 		}
 	},
 	"notFound": {

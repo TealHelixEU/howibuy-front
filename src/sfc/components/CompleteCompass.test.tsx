@@ -7,7 +7,7 @@ import type * as SfcModule from '@/sfc/sfc';
 import { completeAttempt, type AttemptStatus, type CompassOverview } from '@/sfc/sfc';
 import { CompleteCompass } from './CompleteCompass';
 
-vi.mock('../sfc', async (importOriginal) => ({
+vi.mock('@/sfc/sfc', async (importOriginal) => ({
 	...(await importOriginal<typeof SfcModule>()),
 	completeAttempt: vi.fn(),
 }));

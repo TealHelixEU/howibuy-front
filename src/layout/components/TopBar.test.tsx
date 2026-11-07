@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { RouterProvider, createMemoryRouter } from 'react-router';
 import { useAuth } from 'react-oidc-context';
 import { beginHandoffSession } from '@/handoff/handoffSession';
-import { navItems } from '../navItems';
+import { navItems } from '@/layout/navItems';
 import { TopBar } from './TopBar';
 
 vi.mock('react-oidc-context', () => ({ useAuth: vi.fn() }));

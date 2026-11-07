@@ -5,7 +5,7 @@ import type * as SfcModule from '@/sfc/sfc';
 import { startNewAttempt, type AttemptStatus, type CompassOverview } from '@/sfc/sfc';
 import { TakeAgain } from './TakeAgain';
 
-vi.mock('../sfc', async (importOriginal) => ({
+vi.mock('@/sfc/sfc', async (importOriginal) => ({
 	...(await importOriginal<typeof SfcModule>()),
 	startNewAttempt: vi.fn(),
 }));

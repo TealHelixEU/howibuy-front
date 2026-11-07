@@ -1,11 +1,11 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { RouterProvider, createMemoryRouter } from 'react-router';
 import { ApiError } from '@/api/client';
 import { fetchOverview } from '@/sfc/sfc';
 import type { CompassOverview } from '@/sfc/sfc';
 import { DashboardPage } from './DashboardPage';
-import { currentMonth, fetchDashboard } from './dashboard';
+import { fetchDashboard } from './dashboard';
 import type { Dashboard } from './dashboard';
 import type * as DashboardModule from './dashboard';
 
@@ -74,21 +74,29 @@ function renderDashboard() {
 }
 
 const TOTALS = { name: 'dashboard.totals' };
+const THIS_MONTH = { name: 'dashboard.month.title' };
 
 beforeEach(() => {
 	fetchDashboardMock.mockReset();
 	fetchOverviewMock.mockReset();
 });
 
+afterEach(() => {
+	vi.useRealTimers();
+});
+
 describe('the dashboard page', () => {
-	it('asks for the month of the browser’s own date', async () => {
+	it('asks for the month of the browser’s own date, and names that month and the one before it', async () => {
+		vi.useFakeTimers({ toFake: ['Date'] });
+		vi.setSystemTime(new Date(2026, 10, 7, 12));
 		fetchDashboardMock.mockResolvedValue(SHOPPER);
 		fetchOverviewMock.mockResolvedValue(COMPLETED);
 
 		renderDashboard();
 
-		await screen.findByRole('region', TOTALS);
-		expect(fetchDashboardMock).toHaveBeenCalledWith(currentMonth(new Date()));
+		const month = await screen.findByRole('region', THIS_MONTH);
+		expect(fetchDashboardMock).toHaveBeenCalledWith('2026-11');
+		expect(within(month).queryByText('dashboard.month.note(current=November,previous=October)')).not.toBeNull();
 	});
 
 	it('shows a spinner, and nothing of the dashboard, while either read is in flight', () => {
@@ -101,7 +109,7 @@ describe('the dashboard page', () => {
 		expect(screen.queryByRole('region', TOTALS)).toBeNull();
 	});
 
-	it('shows the invitation to the compass, then the totals of a user who has bought', async () => {
+	it('shows the invitation to the compass, then the totals of a user who has bought, then this month', async () => {
 		fetchDashboardMock.mockResolvedValue(SHOPPER);
 		fetchOverviewMock.mockResolvedValue(NOT_STARTED);
 
@@ -109,7 +117,9 @@ describe('the dashboard page', () => {
 
 		const totals = await screen.findByRole('region', TOTALS);
 		const invitation = screen.getByRole('region', { name: 'dashboard.invitation.start.title' });
+		const month = screen.getByRole('region', THIS_MONTH);
 		expect(invitation.compareDocumentPosition(totals) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+		expect(totals.compareDocumentPosition(month) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 		expect(screen.queryByText('dashboard.empty.title')).toBeNull();
 	});
 
@@ -121,6 +131,7 @@ describe('the dashboard page', () => {
 
 		expect(await screen.findByRole('heading', { name: 'dashboard.empty.title' })).not.toBeNull();
 		expect(screen.queryByRole('region', TOTALS)).toBeNull();
+		expect(screen.queryByRole('region', THIS_MONTH)).not.toBeNull();
 	});
 
 	it('offers another go when the dashboard cannot be read, and shows it once it can', async () => {
@@ -139,6 +150,24 @@ describe('the dashboard page', () => {
 
 		expect(await screen.findByRole('region', TOTALS)).not.toBeNull();
 		expect(screen.queryByText('dashboard.loadFailed')).toBeNull();
+	});
+
+	it('asks for the same month on a retry, though the month has turned since', async () => {
+		vi.useFakeTimers({ toFake: ['Date'] });
+		vi.setSystemTime(new Date(2026, 9, 31, 23, 59));
+		fetchDashboardMock
+			.mockRejectedValueOnce(new ApiError(503, 'the API is not answering'))
+			.mockResolvedValueOnce(SHOPPER);
+		fetchOverviewMock.mockResolvedValue(COMPLETED);
+
+		renderDashboard();
+		const retry = await screen.findByRole('button', { name: 'common.retry' });
+		vi.setSystemTime(new Date(2026, 10, 1, 0, 1));
+		fireEvent.click(retry);
+
+		const month = await screen.findByRole('region', THIS_MONTH);
+		expect(fetchDashboardMock.mock.calls).toEqual([['2026-10'], ['2026-10']]);
+		expect(within(month).queryByText('dashboard.month.note(current=October,previous=September)')).not.toBeNull();
 	});
 
 	it('fails as one when the compass overview cannot be read, and retries both', async () => {

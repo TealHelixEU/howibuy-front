@@ -2,8 +2,8 @@ import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ProgressBar } from '@/components/ProgressBar';
 import { RichText } from '@/components/RichText';
-import { estimatedMinutes } from '../estimate';
-import type { CategoryOverview } from '../sfc';
+import { estimatedMinutes } from '@/sfc/estimate';
+import type { CategoryOverview } from '@/sfc/sfc';
 import { DimensionIcon } from './DimensionIcon';
 
 interface CategoryCardProps {

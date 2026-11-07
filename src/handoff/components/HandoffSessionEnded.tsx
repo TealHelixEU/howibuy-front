@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import type { HandoffSessionEnd } from '../handoffSession';
+import type { HandoffSessionEnd } from '@/handoff/handoffSession';
 
 const MESSAGE_KEY: Record<HandoffSessionEnd, string> = {
 	linkRefused: 'handoff.linkRefused',

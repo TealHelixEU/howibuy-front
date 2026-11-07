@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { DimensionIcon } from './DimensionIcon';
-import type { SustainabilityDimension } from '../sfc';
+import type { SustainabilityDimension } from '@/sfc/sfc';
 
 const ALL: SustainabilityDimension[] = ['ECOLOGICAL', 'SOCIAL', 'ECONOMIC', 'HEALTH', 'ANIMAL_WELFARE'];
 
