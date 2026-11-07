@@ -8,7 +8,7 @@ See that repo's `CLAUDE.md` for its layering rules. This file covers the SPA onl
 
 - Dev server: `npm run dev` (Vite, port 5175, strict)
 - One-shot tests: `npm run test:run` (`npm test` starts watch mode)
-- Single test file: `npm run test:run -- src/pages/HomePage.test.tsx`
+- Single test file: `npm run test:run -- src/routes/router.test.tsx`
 - Typecheck: `npm run typecheck` — covers both projects (`src` and `vite.config.ts`); a bare `tsc --noEmit`
   silently skips the Vite config, see [package.json-comments.md](package.json-comments.md). TypeScript is
   deliberately held at 6.x; the same file explains why, read it before upgrading to 7
@@ -122,9 +122,10 @@ returns `undefined` for 204, and throws `ApiError` (carrying `.status`) on any n
 the `/` route, and loaders for a matched tree all run *before* any of it renders — so a loader would ask
 the API before the guard had established a session and `getAccessToken()` had anything to give. State a
 feature's screens share is loaded by a layout route element and passed down with `<Outlet context>`; see
-`sfc/CompassLayout.tsx`. `sfc/useLoaded.ts` is the loading/failure/reload triad those elements use: it
+`sfc/CompassLayout.tsx`. `api/useLoaded.ts` is the loading/failure/reload triad those elements use: it
 takes a `useCallback`-stable loader, blanks when *what* it loads changes but not when merely reloading,
-and drops an answer that a later request has overtaken.
+and drops an answer that a later request has overtaken. A load that failed shows
+`components/LoadFailure.tsx`, with the screen's own message and a retry.
 
 Content the API serves as rich text goes through `components/RichText.tsx`, which inserts it as HTML
 **without sanitizing** — the content is authored in `../tealhelix` and seeded from there, so it is trusted

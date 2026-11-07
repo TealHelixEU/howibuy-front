@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 /**
- * What a compass screen shows instead of itself when what it needs could not be had. The retry is the screen's own, since
- * a page reload would cost the user their place.
+ * What a screen shows instead of itself when what it needs could not be had: the message it is given, and a way to try
+ * again. The retry is the screen's own, since a page reload would cost the user their place.
  */
-export function LoadFailure({ onRetry }: { onRetry: () => Promise<void> }) {
+export function LoadFailure({ message, onRetry }: { message: string; onRetry: () => Promise<void> }) {
 	const { t } = useTranslation();
 	const [retrying, setRetrying] = useState(false);
 
@@ -16,10 +16,10 @@ export function LoadFailure({ onRetry }: { onRetry: () => Promise<void> }) {
 
 	return (
 		<div className="alert alert-error">
-			<span>{t('sfc.loadFailed')}</span>
+			<span>{message}</span>
 			<button type="button" className="btn btn-sm" onClick={retry} disabled={retrying}>
 				{retrying && <span className="loading loading-xs loading-spinner" />}
-				{t('sfc.retry')}
+				{t('common.retry')}
 			</button>
 		</div>
 	);

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { RouterProvider, createMemoryRouter } from 'react-router';
 import { routes } from './router';
@@ -11,10 +11,19 @@ vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => k
 vi.mock('@/sfc/sfc', () => ({ fetchOverview: () => new Promise(() => {}) }));
 
 function renderAt(path: string) {
-	return render(<RouterProvider router={createMemoryRouter(routes, { initialEntries: [path] })} />);
+	const router = createMemoryRouter(routes, { initialEntries: [path] });
+	render(<RouterProvider router={router} />);
+	return router;
 }
 
 describe('router', () => {
+	it('lands on the dashboard at /', async () => {
+		const router = renderAt('/');
+
+		expect(await screen.findByText('dashboard.title')).not.toBeNull();
+		expect(router.state.location.pathname).toBe('/dashboard');
+	});
+
 	it('renders the SFC page at /sfc', () => {
 		renderAt('/sfc');
 
@@ -25,5 +34,13 @@ describe('router', () => {
 		renderAt('/dashboard');
 
 		expect(screen.queryByText('dashboard.title')).not.toBeNull();
+	});
+
+	it('offers the dashboard first, then the compass', () => {
+		renderAt('/dashboard');
+
+		const links = within(screen.getByRole('navigation')).getAllByRole('link');
+
+		expect(links.map((link) => link.textContent)).toEqual(['nav.dashboard', 'nav.sfc']);
 	});
 });

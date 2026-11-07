@@ -27,7 +27,6 @@ export function TopBar() {
 								<li key={item.to}>
 									<NavLink
 										to={item.to}
-										end={item.end}
 										className={({ isActive }) =>
 											classNames(
 												'font-semibold md:text-[18px]',

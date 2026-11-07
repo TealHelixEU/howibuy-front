@@ -14,7 +14,7 @@ export function BrandLogo() {
 	const { t } = useTranslation();
 
 	return (
-		<Link to="/" aria-label={t('layout.logoAlt')} className="flex shrink-0 items-center">
+		<Link to="/dashboard" aria-label={t('layout.logoAlt')} className="flex shrink-0 items-center">
 			<img src={hibWordmark} alt="" width={106} height={44} className="hidden h-11 w-auto md:block" />
 			<img src={brandMark} alt="" width={42} height={44} className="h-11 w-auto" />
 			<img src={tealHelixWordmark} alt="" width={142} height={44} className="hidden h-11 w-auto xl:block" />

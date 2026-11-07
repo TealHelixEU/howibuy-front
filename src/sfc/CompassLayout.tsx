@@ -1,11 +1,11 @@
 import { useCallback } from 'react';
 import { Outlet } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { LoadFailure } from './components/LoadFailure';
+import { useLoaded } from '@/api/useLoaded';
+import { LoadFailure } from '@/components/LoadFailure';
 import { TakeAgain } from './components/TakeAgain';
 import type { Compass } from './compassContext';
 import { fetchOverview } from './sfc';
-import { useLoaded } from './useLoaded';
 
 /**
  * Holds what every compass screen needs — the overview — and hands it to whichever screen is showing, along with the
@@ -27,7 +27,7 @@ export function CompassLayout() {
 				<span className="loading loading-lg loading-spinner" aria-label={t('sfc.loading')} />
 			</div>
 		) : (
-			<LoadFailure onRetry={reload} />
+			<LoadFailure message={t('sfc.loadFailed')} onRetry={reload} />
 		);
 	}
 

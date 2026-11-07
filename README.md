@@ -87,9 +87,9 @@ follow from starting the API through the `howibuy-quarkus-dev` Maven profile, wh
 
 ```
 src/
-  api/        fetch wrapper that attaches the bearer token (apiFetch)
+  api/        fetch wrapper that attaches the bearer token (apiFetch); a screen's load and reload (useLoaded)
   auth/       UserManager (oidc-client-ts), RequireAuth guard
-  components/ UI components shared by the screens (ConfirmDialog, ProgressBar, RichText)
+  components/ UI components shared by the screens (ConfirmDialog, LoadFailure, ProgressBar, RichText)
   config/     runtime/env app config loading + jotai atoms
   dashboard/  the user's dashboard (a placeholder)
   handoff/    sessions a retailer hands over: redeeming the ticket, renewing the token
@@ -108,8 +108,8 @@ The whole app sits behind `RequireAuth`, which admits one of two sessions: the u
 or a session a retailer hands over by sending the user here with a one-time ticket in the URL fragment
 (`#ticket=...`), which the app redeems at the API's `/handoff/redeem`. There is no role gate: the realm's
 roles (`retailer`, `catalogue-sync`, `operator`) govern what retailer backends and operators may do in
-the API, and the users of this app need none. The current Home page is a placeholder that proves the
-bootstrap chain works — the visual design is still open.
+the API, and the users of this app need none. `/` leads to the dashboard, so a login and a handover
+link to `/` both land there.
 
 ## Docker deploy
 

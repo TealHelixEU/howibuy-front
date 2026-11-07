@@ -33,10 +33,10 @@ describe('BrandLogo', () => {
 		expect(th.className).toContain('xl:block');
 	});
 
-	it('links home under a single accessible name, leaving the parts decorative', () => {
+	it('links to the dashboard under a single accessible name, leaving the parts decorative', () => {
 		const { container } = renderBrandLogo();
 
-		expect(screen.queryByRole('link', { name: 'layout.logoAlt' })).not.toBeNull();
+		expect(screen.getByRole('link', { name: 'layout.logoAlt' }).getAttribute('href')).toBe('/dashboard');
 		for (const img of container.querySelectorAll('img')) {
 			expect(img.getAttribute('alt')).toBe('');
 		}

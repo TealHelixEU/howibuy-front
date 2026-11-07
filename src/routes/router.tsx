@@ -1,8 +1,7 @@
-import { createBrowserRouter, type RouteObject } from 'react-router';
+import { Navigate, createBrowserRouter, type RouteObject } from 'react-router';
 import { RequireAuth } from '@/auth/RequireAuth';
 import { AppLayout } from '@/layout/AppLayout';
 import { DashboardPage } from '@/dashboard/DashboardPage';
-import { HomePage } from '@/pages/HomePage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { CategoryPage } from '@/sfc/CategoryPage';
 import { CompassLayout } from '@/sfc/CompassLayout';
@@ -18,7 +17,7 @@ export const routes: RouteObject[] = [
 		),
 		children: [
 			// `handle.titleKey` names the i18n key the page-title band renders.
-			{ index: true, element: <HomePage />, handle: { titleKey: 'home.title' } },
+			{ index: true, element: <Navigate to="/dashboard" replace /> },
 			{
 				path: 'sfc',
 				element: <CompassLayout />,

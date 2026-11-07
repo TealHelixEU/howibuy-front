@@ -101,7 +101,7 @@ describe('the compass screens’ shared state', () => {
 		});
 		expect(screen.queryByText(/screen sees/)).toBeNull();
 
-		fireEvent.click(screen.getByRole('button', { name: 'sfc.retry' }));
+		fireEvent.click(screen.getByRole('button', { name: 'common.retry' }));
 
 		await waitFor(() => {
 			expect(screen.queryByText('screen sees 12 answered')).not.toBeNull();

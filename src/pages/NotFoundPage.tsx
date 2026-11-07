@@ -6,8 +6,8 @@ export function NotFoundPage() {
 	return (
 		<div className="flex h-full flex-col items-center justify-center gap-4">
 			<h1>404 — {t('notFound.title')}</h1>
-			<Link to="/" className="btn btn-primary">
-				{t('notFound.backHome')}
+			<Link to="/dashboard" className="btn btn-primary">
+				{t('notFound.backToDashboard')}
 			</Link>
 		</div>
 	);

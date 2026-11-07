@@ -2,13 +2,14 @@ import { useCallback, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ApiError } from '@/api/client';
+import { useLoaded } from '@/api/useLoaded';
+import { LoadFailure } from '@/components/LoadFailure';
 import { ProgressBar } from '@/components/ProgressBar';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { CategoryReview } from './components/CategoryReview';
 import { CategoryStrip } from './components/CategoryStrip';
 import { CompleteCompass } from './components/CompleteCompass';
 import { DimensionIcon } from './components/DimensionIcon';
-import { LoadFailure } from './components/LoadFailure';
 import { ScalePicker } from './components/ScalePicker';
 import { useCompass } from './compassContext';
 import {
@@ -20,7 +21,6 @@ import {
 	type Question,
 	type ScaleOption,
 } from './sfc';
-import { useLoaded } from './useLoaded';
 
 /** Which way the screen is facing: at one question to answer, or at the whole category to read back. */
 type CategoryView =
@@ -98,7 +98,7 @@ function Category({ category }: { category: CategoryOverview }) {
 					<span className="loading loading-lg loading-spinner" aria-label={t('sfc.loading')} />
 				</div>
 			)}
-			{view === undefined && !loading && <LoadFailure onRetry={reload} />}
+			{view === undefined && !loading && <LoadFailure message={t('sfc.loadFailed')} onRetry={reload} />}
 
 			{view?.at === 'question' && (
 				<section className="flex flex-col gap-4">
