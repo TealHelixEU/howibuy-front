@@ -123,7 +123,20 @@
 			"ofAll": "of {{total, number}}",
 			"closest_one": "Closest: <strong>{{label}}</strong>, {{count, number}} product to go",
 			"closest_other": "Closest: <strong>{{label}}</strong>, {{count, number}} products to go",
-			"rule": "Earn one for {{first, number}}, {{second, number}} and {{third, number}} products that score high in one dimension."
+			"rule": "Earn one for {{first, number}}, {{second, number}} and {{third, number}} products that score high in one dimension.",
+			"earned": "{{earned, number}} of {{total, number}} earned",
+			"text": "Each badge counts the products you buy that score high in its dimension, every time you buy them.",
+			"level": "Level {{level, number}}",
+			"levelEarned": "Earned",
+			"requiredProducts_one": "{{count, number}} product",
+			"requiredProducts_other": "{{count, number}} products",
+			"next": "Next: <strong>{{label}}</strong>",
+			"productCount_one": "{{productCount, number}} of {{count, number}} product",
+			"productCount_other": "{{productCount, number}} of {{count, number}} products",
+			"toGo": "{{count, number}} to go",
+			"allEarned": "All three earned",
+			"medallionEarned": "{{label}}, earned",
+			"medallionNotEarned": "{{label}}, not earned yet"
 		},
 		"empty": {
 			"title": "Your first purchase starts the count",

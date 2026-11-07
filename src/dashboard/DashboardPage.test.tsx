@@ -75,6 +75,7 @@ function renderDashboard() {
 
 const TOTALS = { name: 'dashboard.totals' };
 const THIS_MONTH = { name: 'dashboard.month.title' };
+const BADGES = { name: 'dashboard.badges.title' };
 
 beforeEach(() => {
 	fetchDashboardMock.mockReset();
@@ -109,7 +110,7 @@ describe('the dashboard page', () => {
 		expect(screen.queryByRole('region', TOTALS)).toBeNull();
 	});
 
-	it('shows the invitation to the compass, then the totals of a user who has bought, then this month', async () => {
+	it('shows the invitation to the compass, then the totals of a user who has bought, then this month, then the badges', async () => {
 		fetchDashboardMock.mockResolvedValue(SHOPPER);
 		fetchOverviewMock.mockResolvedValue(NOT_STARTED);
 
@@ -118,8 +119,10 @@ describe('the dashboard page', () => {
 		const totals = await screen.findByRole('region', TOTALS);
 		const invitation = screen.getByRole('region', { name: 'dashboard.invitation.start.title' });
 		const month = screen.getByRole('region', THIS_MONTH);
+		const badges = screen.getByRole('region', BADGES);
 		expect(invitation.compareDocumentPosition(totals) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 		expect(totals.compareDocumentPosition(month) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+		expect(month.compareDocumentPosition(badges) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 		expect(screen.queryByText('dashboard.empty.title')).toBeNull();
 	});
 
@@ -132,6 +135,7 @@ describe('the dashboard page', () => {
 		expect(await screen.findByRole('heading', { name: 'dashboard.empty.title' })).not.toBeNull();
 		expect(screen.queryByRole('region', TOTALS)).toBeNull();
 		expect(screen.queryByRole('region', THIS_MONTH)).not.toBeNull();
+		expect(screen.queryByRole('region', BADGES)).not.toBeNull();
 	});
 
 	it('offers another go when the dashboard cannot be read, and shows it once it can', async () => {
