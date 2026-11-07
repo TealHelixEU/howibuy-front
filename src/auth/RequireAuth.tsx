@@ -5,12 +5,16 @@ import { useTranslation } from 'react-i18next';
 import { HandoffSessionEnded } from '@/handoff/components/HandoffSessionEnded';
 import { useHandoffSessionState } from '@/handoff/useHandoffSessionState';
 
+interface RequireAuthProps {
+	children: ReactNode;
+}
+
 /**
  * Let through whoever the tab's session belongs to. There are two ways to have one: a login of the user's own, and a
  * session a retailer handed over. The one the tab is in decides what an absent session means — a login to be started, or
  * a session that is over and cannot be started again from here.
  */
-export function RequireAuth({ children }: { children: ReactNode }) {
+export function RequireAuth({ children }: RequireAuthProps) {
 	const handoffSession = useHandoffSessionState();
 	const auth = useAuth();
 	const { t } = useTranslation();
@@ -64,7 +68,11 @@ export function RequireAuth({ children }: { children: ReactNode }) {
 	return <>{children}</>;
 }
 
+interface NoticeProps {
+	children: ReactNode;
+}
+
 /** What the page holds instead of the application, while there is a reason it holds nothing else. */
-function Notice({ children }: { children: ReactNode }) {
+function Notice({ children }: NoticeProps) {
 	return <div className="flex h-full items-center justify-center p-8">{children}</div>;
 }

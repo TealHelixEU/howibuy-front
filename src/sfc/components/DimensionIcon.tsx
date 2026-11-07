@@ -14,8 +14,13 @@ const MARKS: Record<SustainabilityDimension, ReactElement> = {
 	ANIMAL_WELFARE: <FaCow />,
 };
 
+interface DimensionIconProps {
+	dimension: SustainabilityDimension;
+	className?: string;
+}
+
 /** The mark standing for a dimension. Decoration: the category's name is always alongside it. */
-export function DimensionIcon({ dimension, className }: { dimension: SustainabilityDimension; className?: string }) {
+export function DimensionIcon({ dimension, className }: DimensionIconProps) {
 	return (
 		<span className={className} aria-hidden="true">
 			{MARKS[dimension]}

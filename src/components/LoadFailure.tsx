@@ -1,11 +1,16 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+interface LoadFailureProps {
+	message: string;
+	onRetry: () => Promise<void>;
+}
+
 /**
  * What a screen shows instead of itself when what it needs could not be had: the message it is given, and a way to try
  * again. The retry is the screen's own, since a page reload would cost the user their place.
  */
-export function LoadFailure({ message, onRetry }: { message: string; onRetry: () => Promise<void> }) {
+export function LoadFailure({ message, onRetry }: LoadFailureProps) {
 	const { t } = useTranslation();
 	const [retrying, setRetrying] = useState(false);
 

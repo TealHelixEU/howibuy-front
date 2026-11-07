@@ -3,11 +3,16 @@ import { useTranslation } from 'react-i18next';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { startNewAttempt, type CompassOverview } from '@/sfc/sfc';
 
+interface TakeAgainProps {
+	overview: CompassOverview;
+	onStarted: () => Promise<void>;
+}
+
 /**
  * The way back to a blank compass for a user whose answers have stood long enough, and — until they have — word of when
  * that will be. Asked about first: a fresh attempt starts empty, and no screen shows the completed one again.
  */
-export function TakeAgain({ overview, onStarted }: { overview: CompassOverview; onStarted: () => Promise<void> }) {
+export function TakeAgain({ overview, onStarted }: TakeAgainProps) {
 	const { t } = useTranslation();
 	const [asking, setAsking] = useState(false);
 	const [starting, setStarting] = useState(false);

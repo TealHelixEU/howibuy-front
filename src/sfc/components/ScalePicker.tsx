@@ -2,6 +2,12 @@ import { useState } from 'react';
 import { RichText } from '@/components/RichText';
 import { SCALE_OPTIONS, type Question, type ScaleOption } from '@/sfc/sfc';
 
+interface ScalePickerProps {
+	question: Question;
+	labels: Record<ScaleOption, string>;
+	onPick: (option: ScaleOption) => Promise<void>;
+}
+
 /**
  * A question and the five points it is answered on. Picking one is the answer — there is nothing further to confirm —
  * and the pick shows at once while it is being saved, with the rest held so a second pick cannot race the first.
@@ -9,15 +15,7 @@ import { SCALE_OPTIONS, type Question, type ScaleOption } from '@/sfc/sfc';
  * {@link onPick} answers for whether the save worked; it is expected to settle either way rather than throw, so that the
  * screen around it is the one that speaks about failure.
  */
-export function ScalePicker({
-	question,
-	labels,
-	onPick,
-}: {
-	question: Question;
-	labels: Record<ScaleOption, string>;
-	onPick: (option: ScaleOption) => Promise<void>;
-}) {
+export function ScalePicker({ question, labels, onPick }: ScalePickerProps) {
 	const [picking, setPicking] = useState<ScaleOption | null>(null);
 	const shown = picking ?? question.answer;
 	const promptId = `question-${question.id}`;

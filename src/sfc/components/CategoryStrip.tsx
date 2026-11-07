@@ -4,11 +4,16 @@ import { inPresentationOrder } from '@/sfc/dimensions';
 import type { CategoryOverview } from '@/sfc/sfc';
 import { DimensionIcon } from './DimensionIcon';
 
+interface CategoryStripProps {
+	categories: CategoryOverview[];
+	currentId: string;
+}
+
 /**
  * The way on from a category that is done: the others, each with how far the user has got in it. Which category to take
  * up next stays theirs to choose, so nothing here decides it for them.
  */
-export function CategoryStrip({ categories, currentId }: { categories: CategoryOverview[]; currentId: string }) {
+export function CategoryStrip({ categories, currentId }: CategoryStripProps) {
 	const { t } = useTranslation();
 	const others = inPresentationOrder(
 		categories.filter((one) => one.category.id !== currentId),

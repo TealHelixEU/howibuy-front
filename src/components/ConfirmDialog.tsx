@@ -1,5 +1,15 @@
 import { useId } from 'react';
 
+interface ConfirmDialogProps {
+	title: string;
+	body: string;
+	confirmLabel: string;
+	cancelLabel: string;
+	busy: boolean;
+	onConfirm: () => void;
+	onCancel: () => void;
+}
+
 /**
  * Asks before something that cannot be undone. Built from plain markup rather than the browser's own dialog, so it is
  * part of the page like everything else.
@@ -12,15 +22,7 @@ export function ConfirmDialog({
 	busy,
 	onConfirm,
 	onCancel,
-}: {
-	title: string;
-	body: string;
-	confirmLabel: string;
-	cancelLabel: string;
-	busy: boolean;
-	onConfirm: () => void;
-	onCancel: () => void;
-}) {
+}: ConfirmDialogProps) {
 	const titleId = useId();
 
 	return (

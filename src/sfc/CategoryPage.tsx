@@ -41,12 +41,16 @@ export function CategoryPage() {
 	return found === undefined ? <NotFoundPage /> : <Category category={found} />;
 }
 
+interface CategoryProps {
+	category: CategoryOverview;
+}
+
 /**
  * One category: the question to answer next, or — once every question in it is answered — the whole of it to read back.
  * Which of the two is showing is the server's answer about the frontier, not a guess from the answers held here, and it
  * changes as the last question is answered, so finishing a category leaves the user in it rather than anywhere else.
  */
-function Category({ category }: { category: CategoryOverview }) {
+function Category({ category }: CategoryProps) {
 	const { t } = useTranslation();
 	const { overview, refresh } = useCompass();
 	const [searchParams, setSearchParams] = useSearchParams();
@@ -152,8 +156,13 @@ async function viewOf(categoryId: string, steppedBack: boolean): Promise<Categor
 	return { at: 'review', questions: await fetchCategoryQuestions(categoryId) };
 }
 
+interface CategoryHeadingProps {
+	category: CategoryOverview;
+	view: CategoryView | undefined;
+}
+
 /** Where the user is: which category, how far into it, and — while answering — which question of it. */
-function CategoryHeading({ category, view }: { category: CategoryOverview; view: CategoryView | undefined }) {
+function CategoryHeading({ category, view }: CategoryHeadingProps) {
 	const { t } = useTranslation();
 	const { progress } = category;
 

@@ -1,3 +1,9 @@
+interface RichTextProps {
+	html: string;
+	className?: string;
+	id?: string;
+}
+
 /**
  * Renders text the API serves as rich text, formatting and all.
  *
@@ -5,6 +11,6 @@
  * application's own source and is inserted without sanitizing. This is the only place that assumes that: if the compass
  * ever serves content from anywhere a user can reach, sanitizing belongs here.
  */
-export function RichText({ html, className, id }: { html: string; className?: string; id?: string }) {
+export function RichText({ html, className, id }: RichTextProps) {
 	return <div id={id} className={className} dangerouslySetInnerHTML={{ __html: html }} />;
 }

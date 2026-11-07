@@ -4,21 +4,18 @@ import { RichText } from '@/components/RichText';
 import type { Question, ScaleOption } from '@/sfc/sfc';
 import { ScalePicker } from './ScalePicker';
 
-/**
- * A category the user has answered every question of, laid out to be read back: each question with the answer it was
- * given. While the attempt is still open any one of them can be picked up again, in place, without disturbing the rest.
- */
-export function CategoryReview({
-	questions,
-	labels,
-	revisable,
-	onAnswer,
-}: {
+interface CategoryReviewProps {
 	questions: Question[];
 	labels: Record<ScaleOption, string>;
 	revisable: boolean;
 	onAnswer: (questionId: string, option: ScaleOption) => Promise<void>;
-}) {
+}
+
+/**
+ * A category the user has answered every question of, laid out to be read back: each question with the answer it was
+ * given. While the attempt is still open any one of them can be picked up again, in place, without disturbing the rest.
+ */
+export function CategoryReview({ questions, labels, revisable, onAnswer }: CategoryReviewProps) {
 	const { t } = useTranslation();
 	const [revisiting, setRevisiting] = useState<string | null>(null);
 

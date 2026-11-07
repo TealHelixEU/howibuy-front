@@ -6,11 +6,15 @@ import { estimatedMinutes } from '../estimate';
 import type { CategoryOverview } from '../sfc';
 import { DimensionIcon } from './DimensionIcon';
 
+interface CategoryCardProps {
+	overview: CategoryOverview;
+}
+
 /**
  * One category on the compass: what it covers, how far the user has got with it, and the way in. The invitation reads
  * differently depending on whether there is anything to start, carry on with, or look back over.
  */
-export function CategoryCard({ overview }: { overview: CategoryOverview }) {
+export function CategoryCard({ overview }: CategoryCardProps) {
 	const { t } = useTranslation();
 	const { category, progress, estimatedSeconds } = overview;
 

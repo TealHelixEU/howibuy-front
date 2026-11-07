@@ -7,12 +7,16 @@ const MESSAGE_KEY: Record<HandoffSessionEnd, string> = {
 	sessionOver: 'handoff.sessionOver',
 };
 
+interface HandoffSessionEndedProps {
+	end: HandoffSessionEnd;
+}
+
 /**
  * What became of the session the retailer opened, and the one way on from it. Every way it can end leads back to the
  * retailer, there being no login of the user's own here to fall back on, so what changes between them is what they are
  * told happened rather than what they are asked to do.
  */
-export function HandoffSessionEnded({ end }: { end: HandoffSessionEnd }) {
+export function HandoffSessionEnded({ end }: HandoffSessionEndedProps) {
 	const { t } = useTranslation();
 
 	return (
